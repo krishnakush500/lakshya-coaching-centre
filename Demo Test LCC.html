@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lakshya Coaching Center - Online Test Platform (Demo)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* ===== GLOBAL STYLES ===== */
+        :root {
+            --primary-blue: #1976D2;
+            --light-blue: #2196F3;
+            --dark-blue: #0D47A1;
+            --primary-red: #D32F2F;
+            --light-red: #EF5350;
+            --dark-red: #C62828;
+            --primary-orange: #FF9800;
+            --dark-orange: #F57C00;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --medium-gray: #E0E0E0;
+            --dark-gray: #616161;
+            --text-color: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== HEADER / COACHING DETAILS ===== */
+        .coaching-header {
+            background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+            color: var(--white);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .coaching-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .coaching-header .details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 12px;
+        }
+
+        .coaching-header .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .coaching-header .detail-item i {
+            font-size: 1rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .test-card {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            border-left-color: var(--light-blue);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            white-space: nowrap;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .btn-secondary {
+            background-color: var(--medium-gray);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--dark-gray);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background-color: var(--primary-red);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--dark-red);
+        }
+
+        .btn-warning {
+            background-color: var(--primary-orange);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background-color: var(--dark-orange);
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* ===== TEST LIST ===== */
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .test-title {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .test-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .test-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+
+        .test-detail i {
+            color: var(--primary-blue);
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%231976D2' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+            padding-right: 35px;
+        }
+
+        /* ===== TEST SCREEN ===== */
+        .test-header {
+            background-color: var(--white);
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .test-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .test-name {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .student-info {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .timer-container {
+            background-color: var(--light-red);
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            min-width: 85px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .timer-warning {
+            background-color: var(--primary-red);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* ===== QUESTION NAVIGATION DROPDOWN ===== */
+        .question-navigation {
+            background-color: var(--white);
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .jump-to-container {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .jump-to-label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+        }
+
+        .jump-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background-color: var(--white);
+        }
+
+        .question-status {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .answered-dot {
+            background-color: var(--primary-blue);
+        }
+
+        .not-answered-dot {
+            background-color: var(--medium-gray);
+        }
+
+        /* ===== QUESTION CARD ===== */
+        .question-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-number {
+            font-size: 1rem;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background-color: var(--light-gray);
+            border-color: var(--primary-blue);
+        }
+
+        .option.selected {
+            background-color: rgba(25, 118, 210, 0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .option input {
+            margin-right: 10px;
+            transform: scale(1.1);
+            flex-shrink: 0;
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-right: 8px;
+            color: var(--primary-blue);
+            min-width: 18px;
+            flex-shrink: 0;
+        }
+
+        .option-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        /* ===== TEST NAVIGATION BUTTONS - SINGLE ROW ===== */
+        .test-navigation-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 15px;
+            background-color: var(--white);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 0;
+            padding: 10px 8px;
+            font-size: 0.85rem;
+        }
+
+        .nav-btn i {
+            font-size: 0.9rem;
+        }
+
+        .question-progress {
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+            background-color: var(--white);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== RESULT SCREEN ===== */
+        .result-screen {
+            background-color: white;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .result-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .result-top-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 10px;
+            flex-wrap: wrap;
+        }
+
+        .result-print-area {
+            background-color: white;
+            border: 2px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 18px;
+            margin: 0 auto 15px;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            flex: 1;
+        }
+
+        .coaching-info {
+            text-align: center;
+            margin-bottom: 18px;
+            border-bottom: 3px solid var(--primary-blue);
+            padding-bottom: 12px;
+        }
+
+        .coaching-name {
+            color: var(--primary-blue);
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .coaching-location {
+            font-size: 0.95rem;
+            color: var(--dark-gray);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .coaching-details {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+        }
+
+        .coaching-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .director-info {
+            background-color: rgba(25, 118, 210, 0.1);
+            padding: 8px 10px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 1.4rem;
+            color: var(--primary-red);
+            margin-bottom: 18px;
+            padding: 8px;
+            background-color: rgba(211, 47, 47, 0.1);
+            border-radius: 5px;
+        }
+
+        .student-info-result {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+            background-color: var(--light-gray);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .student-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--medium-gray);
+        }
+
+        .student-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+            font-size: 0.85rem;
+        }
+
+        .result-table th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 10px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .result-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .result-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .result-table .highlight {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        .result-table .wrong {
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+
+        .result-status {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 8px;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .first-division {
+            background-color: rgba(25, 118, 210, 0.2);
+            color: var(--primary-blue);
+            border: 3px solid var(--primary-blue);
+        }
+
+        .second-division {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #FF8F00;
+            border: 3px solid #FF8F00;
+        }
+
+        .third-division {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #1976D2;
+            border: 3px solid #1976D2;
+        }
+
+        .fail-status {
+            background-color: rgba(211, 47, 47, 0.15);
+            color: var(--primary-red);
+            border: 3px solid var(--primary-red);
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 2px solid var(--medium-gray);
+            flex-wrap: wrap;
+        }
+
+        .result-footer {
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            color: var(--dark-gray);
+            font-size: 0.75rem;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        /* ===== LOADING & MESSAGES ===== */
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+        }
+
+        .loading i {
+            color: var(--primary-blue);
+            margin-right: 8px;
+        }
+
+        .error-message {
+            background-color: rgba(211, 47, 47, 0.1);
+            color: var(--primary-red);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background-color: rgba(25, 118, 210, 0.1);
+            color: var(--primary-blue);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: var(--dark-gray);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .result-screen,
+            .result-screen * {
+                visibility: visible;
+            }
+            
+            .result-screen {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .result-print-area {
+                border: none;
+                box-shadow: none;
+                padding: 20px;
+                margin: 0;
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+            
+            .result-top-actions,
+            .result-actions,
+            .result-footer {
+                display: none !important;
+            }
+        }
+
+        /* ===== MOBILE RESPONSIVENESS ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .coaching-header {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            .coaching-header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .coaching-header .details {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .tests-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-top: 12px;
+            }
+
+            .test-header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px 12px;
+                margin-bottom: 10px;
+            }
+
+            .timer-container {
+                align-self: center;
+                min-width: 80px;
+                padding: 6px 10px;
+                font-size: 0.95rem;
+            }
+
+            .student-info-result {
+                grid-template-columns: 1fr;
+                gap: 6px;
+                padding: 10px;
+                font-size: 0.82rem;
+            }
+            
+            .coaching-name {
+                font-size: 1.4rem;
+            }
+            
+            .coaching-location {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+            }
+            
+            .coaching-details {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+                font-size: 0.8rem;
+            }
+            
+            .director-info {
+                font-size: 0.8rem;
+                padding: 6px 8px;
+            }
+            
+            .result-print-area {
+                padding: 15px;
+                border-width: 1px;
+                margin-bottom: 12px;
+            }
+            
+            .result-table th,
+            .result-table td {
+                padding: 8px 6px;
+                font-size: 0.82rem;
+            }
+            
+            .result-top-actions,
+            .result-actions {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .result-top-actions .btn,
+            .result-actions .btn {
+                width: 100%;
+                max-width: 280px;
+                padding: 10px 12px;
+            }
+            
+            .result-status {
+                font-size: 1.2rem;
+                padding: 10px;
+                margin: 10px 0;
+                min-height: 48px;
+            }
+            
+            .result-container {
+                padding: 8px;
+                justify-content: flex-start;
+            }
+            
+            .question-navigation {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 10px 12px;
+                margin-bottom: 10px;
+            }
+            
+            .question-status {
+                justify-content: center;
+            }
+            
+            .test-navigation-row {
+                padding: 10px;
+                gap: 6px;
+                margin-top: 12px;
+            }
+            
+            .nav-btn {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .nav-btn i {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .coaching-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .test-name {
+                font-size: 1.1rem;
+            }
+            
+            .coaching-name {
+                font-size: 1.3rem;
+            }
+            
+            .coaching-location {
+                font-size: 0.8rem;
+            }
+            
+            .coaching-details {
+                font-size: 0.75rem;
+            }
+            
+            .result-title {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+                padding: 6px;
+            }
+            
+            .result-print-area {
+                padding: 12px;
+                border: 1px solid var(--primary-blue);
+                box-shadow: 0 0 8px rgba(0,0,0,0.05);
+            }
+            
+            .result-table {
+                font-size: 0.8rem;
+            }
+            
+            .student-info-result {
+                font-size: 0.8rem;
+            }
+            
+            .question-text {
+                font-size: 1.05rem;
+                margin-bottom: 15px;
+            }
+            
+            .option {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            .question-container {
+                padding: 15px;
+                min-height: 260px;
+                margin-bottom: 10px;
+            }
+            
+            .test-navigation-row {
+                padding: 8px;
+                gap: 4px;
+            }
+            
+            .nav-btn {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+            
+            .nav-btn i {
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Extra small mobile devices (iPhone SE etc) */
+        @media (max-width: 375px) {
+            .test-header {
+                padding: 8px 10px;
+            }
+            
+            .test-name {
+                font-size: 1rem;
+            }
+            
+            .student-info {
+                font-size: 0.85rem;
+            }
+            
+            .timer-container {
+                min-width: 70px;
+                padding: 5px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .question-navigation {
+                padding: 8px 10px;
+            }
+            
+            .jump-select {
+                padding: 7px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            .option {
+                padding: 7px 9px;
+                font-size: 0.85rem;
+            }
+            
+            .test-navigation-row {
+                padding: 8px 6px;
+            }
+            
+            .nav-btn {
+                padding: 7px 3px;
+                font-size: 0.7rem;
+            }
+            
+            .nav-btn i {
+                font-size: 0.75rem;
+            }
+            
+            .btn-small {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Height-based adjustments for mobile */
+        @media (max-height: 700px) and (max-width: 768px) {
+            .test-header {
+                padding: 8px 10px;
+                margin-bottom: 8px;
+            }
+            
+            .question-navigation {
+                padding: 8px 10px;
+                margin-bottom: 8px;
+            }
+            
+            .question-container {
+                padding: 12px;
+                min-height: 220px;
+                margin-bottom: 8px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            
+            .options-container {
+                gap: 6px;
+            }
+            
+            .option {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .test-navigation-row {
+                margin-top: 10px;
+                padding: 8px;
+            }
+            
+            .question-progress {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+            }
+        }
+        
+        /* Hide result card template on other pages */
+        .page:not(#page-result) .result-print-area {
+            display: none;
+        }
+        
+        /* Compact card for mobile */
+        .compact-card {
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        /* Force no scroll on test screen */
+        #page-test-screen .container {
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Test List -->
+    <div id="page-test-list" class="page active">
+        <div class="container">
+            <div class="coaching-header">
+                <h1>LAKSHYA COACHING CENTER</h1>
+                <p>Bangra Patti & Jatauliya Chowk</p>
+                <div class="details">
+                    <div class="detail-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>GUIDANCE BY: MR. MANISH SIR</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Call: +91 7654204716</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card compact-card">
+                <h2>Available Tests</h2>
+                <p>Select a test to begin your examination.</p>
+            </div>
+
+            <div id="tests-container" class="tests-grid">
+                <!-- Tests will be loaded here -->
+            </div>
+
+            <div class="footer">
+                <p>LAKSHYA COACHING CENTER &copy; 2024 | DEMO VERSION</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Student Details -->
+    <div id="page-student-details" class="page">
+        <div class="container">
+            <div class="coaching-header">
+                <h1>LAKSHYA COACHING CENTER</h1>
+                <p>Bangra Patti & Jatauliya Chowk</p>
+                <div class="details">
+                    <div class="detail-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>GUIDANCE BY: MR. MANISH SIR</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span>Call: +91 7654204716</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card compact-card">
+                <h2>Student Registration</h2>
+                <p>Please enter your details to proceed with the test.</p>
+                
+                <form id="student-form">
+                    <div class="form-group">
+                        <label for="student-name" class="form-label">Full Name *</label>
+                        <input type="text" id="student-name" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roll-number" class="form-label">Roll Number *</label>
+                        <input type="text" id="roll-number" class="form-control" placeholder="Enter your roll number" required>
+                    </div>
+                    
+                    <div id="student-form-error" class="error-message" style="display: none;"></div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Proceed to Test</button>
+                    <button type="button" id="back-to-tests" class="btn btn-secondary btn-block" style="margin-top: 10px;">Back to Test List</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Test Screen -->
+    <div id="page-test-screen" class="page">
+        <div class="container">
+            <div class="test-header">
+                <div class="test-info">
+                    <div class="test-name" id="current-test-name">Test Name</div>
+                    <div class="student-info">
+                        <span id="display-student-name">Student Name</span> | 
+                        <span id="display-roll-number">Roll Number</span>
+                    </div>
+                </div>
+                <div class="timer-container" id="timer">
+                    15:00
+                </div>
+            </div>
+
+            <div class="question-navigation">
+                <div class="jump-to-container">
+                    <div class="jump-to-label">Jump to Question:</div>
+                    <select id="jump-to-select" class="form-control jump-select">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="question-status">
+                    <div class="status-item">
+                        <div class="status-dot answered-dot"></div>
+                        <span>Answered</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot not-answered-dot"></div>
+                        <span>Not Answered</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-progress" id="question-progress">
+                Question 1 of 5
+            </div>
+
+            <div class="question-container">
+                <div class="question-number" id="question-number">Question 1</div>
+                <div class="question-text" id="question-text">
+                    Loading question...
+                </div>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Options will be loaded here -->
+                </div>
+            </div>
+
+            <!-- SINGLE ROW NAVIGATION BUTTONS -->
+            <div class="test-navigation-row">
+                <button id="prev-question" class="btn btn-secondary nav-btn">
+                    <i class="fas fa-arrow-left"></i> Prev
+                </button>
+                <button id="complete-test" class="btn btn-warning nav-btn">
+                    <i class="fas fa-paper-plane"></i> Complete
+                </button>
+                <button id="next-question" class="btn btn-primary nav-btn">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 4: Result Screen -->
+    <div id="page-result" class="page result-screen">
+        <div class="result-container">
+            <!-- Top Action Buttons -->
+            <div class="result-top-actions">
+                <button id="download-pdf-top" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+                <button id="print-result-top" class="btn btn-secondary">
+                    <i class="fas fa-print"></i> Print Result
+                </button>
+            </div>
+            
+            <!-- Result Card -->
+            <div id="result-print-area" class="result-print-area">
+                <!-- Coaching Info -->
+                <div class="coaching-info">
+                    <div class="coaching-name">LAKSHYA COACHING CENTER</div>
+                    <div class="coaching-location">
+                        Bangra Patti & Jatauliya Chowk
+                    </div>
+                    <div class="coaching-details">
+                        <div class="coaching-detail director-info">
+                            <i class="fas fa-user-tie"></i>
+                            <span>GUIDANCE BY: MR. MANISH SIR</span>
+                        </div>
+                        <div class="coaching-detail">
+                            <i class="fas fa-phone"></i>
+                            <span>Call: +91 7654204716</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Result Title -->
+                <div class="result-title">
+                    <i class="fas fa-award"></i> EXAMINATION RESULT
+                </div>
+                
+                <!-- Student Info -->
+                <div class="student-info-result">
+                    <div class="student-info-item">
+                        <strong>Student Name:</strong>
+                        <span id="result-student-name">-</span>
+                    </div>
+                    <div class="student-info-item">
+                        <strong>Roll Number:</strong>
+                        <span id="result-roll-number">-</span>
+                    </div>
+                    <div class="student-info-item">
+                        <strong>Test Name:</strong>
+                        <span id="result-test-name">-</span>
+                    </div>
+                    <div class="student-info-item">
+                        <strong>Date:</strong>
+                        <span id="result-test-date">-</span>
+                    </div>
+                </div>
+                
+                <!-- Result Table -->
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Questions</td>
+                            <td id="total-questions">0</td>
+                        </tr>
+                        <tr>
+                            <td>Attempted</td>
+                            <td id="attempted-questions">0</td>
+                        </tr>
+                        <tr>
+                            <td>Correct Answers</td>
+                            <td id="correct-answers" class="highlight">0</td>
+                        </tr>
+                        <tr>
+                            <td>Wrong Answers</td>
+                            <td id="wrong-answers" class="wrong">0</td>
+                        </tr>
+                        <tr>
+                            <td>Total Marks</td>
+                            <td id="total-marks">0</td>
+                        </tr>
+                        <tr>
+                            <td>Marks Obtained</td>
+                            <td id="marks-obtained" class="highlight">0</td>
+                        </tr>
+                        <tr>
+                            <td>Percentage</td>
+                            <td id="percentage" class="highlight">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Result Status -->
+                <div id="result-status" class="result-status">
+                    <!-- Division status will be shown here -->
+                </div>
+            </div>
+            
+            <!-- Bottom Action Buttons -->
+            <div class="result-actions">
+                <button id="new-test" class="btn btn-danger">
+                    <i class="fas fa-plus"></i> Take Another Test
+                </button>
+            </div>
+            
+            <div class="result-footer">
+                <p>This is an electronically generated result. No signature required.</p>
+                <p>LAKSHYA COACHING CENTER &copy; 2024 | Result ID: <span id="result-id">-</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== GLOBAL VARIABLES =====
+        let currentPage = 'test-list';
+        let tests = [];
+        let currentTest = null;
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let studentAnswers = {};
+        let timerInterval = null;
+        let timeRemaining = 0;
+        let studentDetails = {};
+        let resultId = '';
+
+        // ===== DEMO TESTS DATA =====
+        // Bihar Board Science - Hindi Medium
+        const demoTests = [
+            {
+                id: 'test-1',
+                testName: 'Science - Chapter 1: Chemical Reactions (रासायनिक अभिक्रियाएं)',
+                totalQuestions: 5,
+                totalMarks: 25,
+                duration: 15, // minutes
+                questionsText: `Q1. निम्नलिखित में से कौन-सा भौतिक परिवर्तन है?
+A) लोहे पर जंग लगना
+B) दूध से दही बनना
+C) काँच का टूटना
+D) खाद्य पदार्थ का पाचन
+Answer: C
+
+Q2. निम्नलिखित में से कौन सी ऊष्माक्षेपी अभिक्रिया है?
+A) श्वसन
+B) प्रकाश संश्लेषण
+C) बर्फ का पिघलना
+D) अमोनियम क्लोराइड का जल में घुलना
+Answer: A
+
+Q3. सोडियम धातु जल के साथ अभिक्रिया करके क्या बनाती है?
+A) सोडियम हाइड्रॉक्साइड और हाइड्रोजन गैस
+B) सोडियम क्लोराइड और ऑक्सीजन
+C) सोडियम कार्बोनेट और कार्बन डाइऑक्साइड
+D) सोडियम सल्फेट और सल्फर डाइऑक्साइड
+Answer: A
+
+Q4. लोहे पर जंग लगना किस प्रकार की अभिक्रिया है?
+A) संयोजन अभिक्रिया
+B) ऑक्सीकरण अभिक्रिया
+C) उदासीनीकरण अभिक्रिया
+D) अपघटन अभिक्रिया
+Answer: B
+
+Q5. निम्नलिखित में से कौन सा रेडॉक्स अभिक्रिया का उदाहरण है?
+A) सोडियम क्लोराइड का जल में घुलना
+B) कैल्सियम ऑक्साइड का जल के साथ अभिक्रिया
+C) लोहे का जंग लगना
+D) हाइड्रोक्लोरिक अम्ल और सोडियम हाइड्रॉक्साइड की अभिक्रिया
+Answer: C`
+            },
+            {
+                id: 'test-2',
+                testName: 'Science - Chapter 2: Acids, Bases and Salts (अम्ल, क्षारक एवं लवण)',
+                totalQuestions: 5,
+                totalMarks: 25,
+                duration: 15, // minutes
+                questionsText: `Q1. निम्नलिखित में से कौन सा प्राकृतिक अम्ल है?
+A) हाइड्रोक्लोरिक अम्ल
+B) सल्फ्यूरिक अम्ल
+C) साइट्रिक अम्ल
+D) नाइट्रिक अम्ल
+Answer: C
+
+Q2. pH पैमाने पर किसी उदासीन विलयन का pH मान क्या होता है?
+A) 0
+B) 7
+C) 14
+D) 10
+Answer: B
+
+Q3. अम्ल और क्षारक की अभिक्रिया से क्या बनता है?
+A) लवण और जल
+B) अम्ल और गैस
+C) क्षारक और गैस
+D) केवल जल
+Answer: A
+
+Q4. निम्नलिखित में से कौन सा अम्लीय लवण है?
+A) सोडियम क्लोराइड
+B) पोटैशियम सल्फेट
+C) सोडियम हाइड्रोजन कार्बोनेट
+D) कैल्सियम कार्बोनेट
+Answer: C
+
+Q5. फिनॉल्फथेलिन सूचक क्षारीय माध्यम में किस रंग का हो जाता है?
+A) नीला
+B) लाल
+C) गुलाबी
+D) पीला
+Answer: C`
+            }
+        ];
+
+        // ===== PAGE NAVIGATION FUNCTIONS =====
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show requested page
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            currentPage = pageId;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // ===== PAGE 1: TEST LIST =====
+        function loadTests() {
+            tests = demoTests;
+            displayTests();
+        }
+
+        function displayTests() {
+            const container = document.getElementById('tests-container');
+            
+            if (tests.length === 0) {
+                container.innerHTML = `
+                    <div class="card">
+                        <h3>No Tests Available</h3>
+                        <p>There are no published tests at the moment. Please check back later.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = tests.map(test => `
+                <div class="card test-card" data-test-id="${test.id}">
+                    <h3 class="test-title">${test.testName || 'Unnamed Test'}</h3>
+                    <div class="test-details">
+                        <div class="test-detail">
+                            <i class="fas fa-question-circle"></i>
+                            <span>${test.totalQuestions || 0} Questions</span>
+                        </div>
+                        <div class="test-detail">
+                            <i class="fas fa-star"></i>
+                            <span>${test.totalMarks || 0} Marks</span>
+                        </div>
+                        <div class="test-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>${test.duration || 15} Minutes</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-block start-test" data-test-id="${test.id}">
+                        Start Test
+                    </button>
+                </div>
+            `).join('');
+            
+            // Add event listeners to start test buttons
+            document.querySelectorAll('.start-test').forEach(button => {
+                button.addEventListener('click', function() {
+                    const testId = this.getAttribute('data-test-id');
+                    startTest(testId);
+                });
+            });
+        }
+
+        function startTest(testId) {
+            currentTest = tests.find(test => test.id === testId);
+            if (!currentTest) {
+                alert('Test not found!');
+                return;
+            }
+            
+            // Reset answers
+            studentAnswers = {};
+            currentQuestionIndex = 0;
+            
+            showPage('student-details');
+        }
+
+        // ===== PAGE 2: STUDENT DETAILS =====
+        document.getElementById('student-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const studentName = document.getElementById('student-name').value.trim();
+            const rollNumber = document.getElementById('roll-number').value.trim();
+            const errorDiv = document.getElementById('student-form-error');
+            
+            // Validation
+            if (!studentName || !rollNumber) {
+                errorDiv.textContent = 'Please fill in all required fields.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (studentName.length < 2) {
+                errorDiv.textContent = 'Please enter a valid name.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Save student details
+            studentDetails = {
+                name: studentName,
+                rollNumber: rollNumber
+            };
+            
+            // Proceed to test screen
+            loadTestQuestions();
+        });
+
+        document.getElementById('back-to-tests').addEventListener('click', function() {
+            showPage('test-list');
+        });
+
+        // ===== PAGE 3: TEST SCREEN =====
+        function loadTestQuestions() {
+            if (!currentTest || !currentTest.questionsText) {
+                alert('Test questions not found!');
+                showPage('test-list');
+                return;
+            }
+            
+            try {
+                // Parse questions from the questionsText field
+                currentQuestions = parseQuestions(currentTest.questionsText);
+                
+                // Display test info
+                document.getElementById('current-test-name').textContent = currentTest.testName;
+                document.getElementById('display-student-name').textContent = studentDetails.name;
+                document.getElementById('display-roll-number').textContent = studentDetails.rollNumber;
+                
+                // Initialize timer
+                const duration = currentTest.duration || 15;
+                timeRemaining = duration * 60; // Convert to seconds
+                
+                // Start the timer
+                startTimer();
+                
+                // Initialize question dropdown
+                initQuestionDropdown();
+                
+                // Show first question
+                showQuestion(0);
+                
+                // Show test screen
+                showPage('test-screen');
+                
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                alert('Error loading test questions. Please try another test.');
+                showPage('test-list');
+            }
+        }
+
+        function parseQuestions(questionsText) {
+            const questions = [];
+            const lines = questionsText.split('\n');
+            let currentQuestion = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Check if line starts a new question
+                if (line.match(/^Q\d+\./)) {
+                    if (currentQuestion) {
+                        questions.push(currentQuestion);
+                    }
+                    
+                    currentQuestion = {
+                        text: line.replace(/^Q\d+\.\s*/, ''),
+                        options: [],
+                        correctAnswer: ''
+                    };
+                }
+                // Check for options (A), B), C), D))
+                else if (line.match(/^[A-D]\)/)) {
+                    if (currentQuestion) {
+                        const option = line.substring(2).trim();
+                        currentQuestion.options.push(option);
+                    }
+                }
+                // Check for answer line
+                else if (line.match(/^Answer:/i)) {
+                    if (currentQuestion) {
+                        currentQuestion.correctAnswer = line.replace(/^Answer:\s*/i, '').trim();
+                    }
+                }
+                // Append to question text if it's a continuation
+                else if (line && currentQuestion && !currentQuestion.correctAnswer) {
+                    currentQuestion.text += ' ' + line;
+                }
+            }
+            
+            // Add the last question
+            if (currentQuestion) {
+                questions.push(currentQuestion);
+            }
+            
+            return questions;
+        }
+
+        function initQuestionDropdown() {
+            const dropdown = document.getElementById('jump-to-select');
+            dropdown.innerHTML = '';
+            
+            currentQuestions.forEach((question, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `Question ${index + 1}`;
+                dropdown.appendChild(option);
+            });
+            
+            // Add event listener for dropdown change
+            dropdown.addEventListener('change', function() {
+                const questionIndex = parseInt(this.value);
+                if (!isNaN(questionIndex)) {
+                    showQuestion(questionIndex);
+                }
+            });
+        }
+
+        function showQuestion(index) {
+            if (index < 0 || index >= currentQuestions.length) {
+                return;
+            }
+            
+            currentQuestionIndex = index;
+            const question = currentQuestions[index];
+            
+            // Update progress
+            document.getElementById('question-progress').textContent = 
+                `Question ${index + 1} of ${currentQuestions.length}`;
+            
+            document.getElementById('question-number').textContent = `Question ${index + 1}`;
+            document.getElementById('question-text').textContent = question.text;
+            
+            // Update dropdown selection
+            document.getElementById('jump-to-select').value = index;
+            
+            // Display options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            question.options.forEach((option, i) => {
+                const optionId = `option-${index}-${i}`;
+                const isSelected = studentAnswers[index] === optionLabels[i];
+                
+                const optionElement = document.createElement('div');
+                optionElement.className = `option ${isSelected ? 'selected' : ''}`;
+                optionElement.innerHTML = `
+                    <input type="radio" id="${optionId}" name="question-${index}" value="${optionLabels[i]}"
+                           ${isSelected ? 'checked' : ''}>
+                    <span class="option-label">${optionLabels[i]})</span>
+                    <span class="option-text">${option}</span>
+                `;
+                
+                // Add event listener
+                optionElement.addEventListener('click', function() {
+                    selectOption(index, optionLabels[i]);
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Update button states
+            document.getElementById('prev-question').disabled = index === 0;
+            document.getElementById('next-question').disabled = index === currentQuestions.length - 1;
+        }
+
+        function selectOption(questionIndex, option) {
+            studentAnswers[questionIndex] = option;
+            showQuestion(questionIndex); // Refresh to show selection
+        }
+
+        function startTimer() {
+            // Clear any existing timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            updateTimerDisplay();
+            
+            // Start new timer
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                // Check if time is up
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+                
+                // Add warning class when less than 5 minutes remain
+                const timerElement = document.getElementById('timer');
+                if (timeRemaining <= 300) { // 5 minutes = 300 seconds
+                    timerElement.classList.add('timer-warning');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timerElement = document.getElementById('timer');
+            
+            timerElement.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Navigation buttons - now all in single row
+        document.getElementById('prev-question').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                showQuestion(currentQuestionIndex - 1);
+            }
+        });
+
+        document.getElementById('next-question').addEventListener('click', function() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                showQuestion(currentQuestionIndex + 1);
+            }
+        });
+
+        // Complete test button - now in the same row
+        document.getElementById('complete-test').addEventListener('click', function() {
+            if (confirm('Are you sure you want to complete the test? You cannot go back once submitted.')) {
+                submitTest();
+            }
+        });
+
+        // ===== TEST SUBMISSION & RESULT CALCULATION =====
+        async function submitTest() {
+            // Clear timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            // Calculate results
+            const totalQuestions = currentQuestions.length;
+            let attempted = 0;
+            let correct = 0;
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                if (studentAnswers[i]) {
+                    attempted++;
+                    if (studentAnswers[i] === currentQuestions[i].correctAnswer) {
+                        correct++;
+                    }
+                }
+            }
+            
+            const wrong = attempted - correct;
+            const totalMarks = currentTest.totalMarks || totalQuestions;
+            const marksPerQuestion = totalMarks / totalQuestions;
+            const marksObtained = correct * marksPerQuestion;
+            const percentage = (marksObtained / totalMarks) * 100;
+            
+            // Determine Division
+            let division = '';
+            let statusClass = '';
+            
+            if (percentage >= 60) {
+                division = 'FIRST DIVISION';
+                statusClass = 'first-division';
+            } else if (percentage >= 45) {
+                division = 'SECOND DIVISION';
+                statusClass = 'second-division';
+            } else if (percentage >= 33) {
+                division = 'THIRD DIVISION';
+                statusClass = 'third-division';
+            } else {
+                division = 'FAIL';
+                statusClass = 'fail-status';
+            }
+            
+            // Generate result ID
+            resultId = 'RES' + Date.now() + Math.floor(Math.random() * 1000);
+            
+            // Display results
+            displayResults({
+                totalQuestions,
+                attempted,
+                correct,
+                wrong,
+                totalMarks,
+                marksObtained: marksObtained.toFixed(2),
+                percentage: percentage.toFixed(2),
+                division,
+                statusClass
+            });
+        }
+
+        function displayResults(results) {
+            // Set student and test info
+            document.getElementById('result-student-name').textContent = studentDetails.name;
+            document.getElementById('result-roll-number').textContent = studentDetails.rollNumber;
+            document.getElementById('result-test-name').textContent = currentTest.testName;
+            document.getElementById('result-test-date').textContent = new Date().toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+            document.getElementById('result-id').textContent = resultId;
+            
+            // Set result values
+            document.getElementById('total-questions').textContent = results.totalQuestions;
+            document.getElementById('attempted-questions').textContent = results.attempted;
+            document.getElementById('correct-answers').textContent = results.correct;
+            document.getElementById('wrong-answers').textContent = results.wrong;
+            document.getElementById('total-marks').textContent = results.totalMarks;
+            document.getElementById('marks-obtained').textContent = results.marksObtained;
+            document.getElementById('percentage').textContent = `${results.percentage}%`;
+            
+            // Set division status
+            const statusElement = document.getElementById('result-status');
+            statusElement.className = `result-status ${results.statusClass}`;
+            
+            if (results.division === 'FAIL') {
+                statusElement.innerHTML = '<i class="fas fa-times-circle"></i> FAIL <i class="fas fa-times-circle"></i>';
+            } else {
+                statusElement.innerHTML = `<i class="fas fa-trophy"></i> ${results.division} <i class="fas fa-trophy"></i>`;
+            }
+            
+            // Show result page
+            showPage('result');
+        }
+
+        // ===== RESULT PAGE BUTTONS =====
+        document.getElementById('download-pdf-top').addEventListener('click', async function() {
+            await downloadResultAsPDF();
+        });
+
+        document.getElementById('print-result-top').addEventListener('click', function() {
+            window.print();
+        });
+
+        document.getElementById('new-test').addEventListener('click', function() {
+            // Reset state
+            currentTest = null;
+            currentQuestions = [];
+            currentQuestionIndex = 0;
+            studentAnswers = {};
+            studentDetails = {};
+            
+            // Clear form
+            document.getElementById('student-form').reset();
+            
+            // Return to test list
+            showPage('test-list');
+        });
+
+        // ===== PDF DOWNLOAD FUNCTION =====
+        async function downloadResultAsPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const printArea = document.getElementById('result-print-area');
+            
+            // Show loading
+            const downloadBtn = document.getElementById('download-pdf-top');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            downloadBtn.disabled = true;
+            
+            try {
+                // Temporarily adjust for PDF generation
+                const originalTransform = printArea.style.transform;
+                const originalMarginTop = printArea.style.marginTop;
+                
+                // Reset transform for PDF generation
+                printArea.style.transform = 'none';
+                printArea.style.marginTop = '0';
+                
+                // Create a clone for PDF generation
+                const clone = printArea.cloneNode(true);
+                clone.style.width = '700px';
+                clone.style.padding = '30px';
+                clone.style.fontSize = '14px';
+                clone.style.border = '2px solid #1976D2';
+                clone.style.borderRadius = '10px';
+                
+                // Add clone to body temporarily
+                clone.style.position = 'fixed';
+                clone.style.left = '-10000px';
+                clone.style.top = '0';
+                clone.style.zIndex = '-1000';
+                document.body.appendChild(clone);
+                
+                // Use html2canvas with better options for PDF
+                const canvas = await html2canvas(clone, {
+                    scale: 2,
+                    backgroundColor: '#FFFFFF',
+                    useCORS: true,
+                    logging: false,
+                    width: 700,
+                    height: clone.scrollHeight,
+                    windowWidth: 700
+                });
+                
+                // Remove clone
+                document.body.removeChild(clone);
+                
+                // Restore original transform
+                printArea.style.transform = originalTransform;
+                printArea.style.marginTop = originalMarginTop;
+                
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190; // A4 width in mm (210mm - 20mm margins)
+                const pageHeight = 277; // A4 height in mm (297mm - 20mm margins)
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Check if image fits on one page
+                if (imgHeight > pageHeight) {
+                    // Scale down to fit on one page
+                    const scale = pageHeight / imgHeight;
+                    const scaledWidth = imgWidth * scale * 0.95;
+                    const scaledHeight = imgHeight * scale * 0.95;
+                    
+                    // Center on page
+                    const xPos = (210 - scaledWidth) / 2;
+                    const yPos = (297 - scaledHeight) / 2;
+                    
+                    pdf.addImage(imgData, 'PNG', xPos, yPos, scaledWidth, scaledHeight);
+                } else {
+                    // Center vertically
+                    const yPos = (pageHeight - imgHeight) / 2;
+                    pdf.addImage(imgData, 'PNG', 10, yPos, imgWidth, imgHeight);
+                }
+                
+                // Add footer
+                pdf.setFontSize(10);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text('This is an electronically generated result. No signature required.', 105, 287, { align: 'center' });
+                pdf.text(`Result ID: ${resultId} | Generated on: ${new Date().toLocaleDateString()}`, 105, 292, { align: 'center' });
+                
+                // Save the PDF
+                pdf.save(`Result_${studentDetails.rollNumber}_${resultId}.pdf`);
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. You can use the Print button instead.');
+            } finally {
+                // Restore button
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }
+        }
+
+        // ===== INITIALIZE APP =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load tests on initial page load
+            loadTests();
+            
+            // Set up keyboard navigation for test screen
+            document.addEventListener('keydown', function(e) {
+                if (currentPage === 'test-screen') {
+                    if (e.key === 'ArrowLeft' && currentQuestionIndex > 0) {
+                        showQuestion(currentQuestionIndex - 1);
+                    } else if (e.key === 'ArrowRight' && currentQuestionIndex < currentQuestions.length - 1) {
+                        showQuestion(currentQuestionIndex + 1);
+                    } else if (e.key >= '1' && e.key <= '4') {
+                        // Select option with number keys (1-4 for A-D)
+                        const optionIndex = parseInt(e.key) - 1;
+                        const optionLabels = ['A', 'B', 'C', 'D'];
+                        if (optionIndex < currentQuestions[currentQuestionIndex].options.length) {
+                            selectOption(currentQuestionIndex, optionLabels[optionIndex]);
+                        }
+                    } else if (e.key === 'Enter') {
+                        // Enter to go to next question if available
+                        if (currentQuestionIndex < currentQuestions.length - 1) {
+                            showQuestion(currentQuestionIndex + 1);
+                        }
+                    }
+                }
+            });
+        });
+
+        // ===== ERROR HANDLING =====
+        window.addEventListener('error', function(e) {
+            console.error('Application error:', e.error);
+            
+            // Show user-friendly error message
+            if (currentPage === 'test-screen') {
+                alert('An error occurred during the test. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
