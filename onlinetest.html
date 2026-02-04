@@ -1393,6 +1393,7 @@
         let studentDetails = {};
         let resultId = '';
         let db = null;
+        let currentResultData = null;
 
         // ===== FIREBASE INITIALIZATION =====
         function initializeFirebase() {
@@ -1803,6 +1804,54 @@
             }
         });
 
+        // ===== SAVE RESULT TO FIREBASE =====
+        async function saveResultToFirebase(resultData) {
+            if (!db) {
+                console.error("Firestore not initialized");
+                return false;
+            }
+
+            try {
+                // Create a sanitized test name for collection name (replace spaces and special characters)
+                const sanitizedTestName = currentTest.testName
+                    .replace(/[^a-zA-Z0-9]/g, '_')
+                    .toLowerCase();
+                
+                // Create result data object
+                const resultToSave = {
+                    studentName: studentDetails.name,
+                    rollNumber: studentDetails.rollNumber,
+                    testId: currentTest.id,
+                    testName: currentTest.testName,
+                    totalQuestions: resultData.totalQuestions,
+                    attempted: resultData.attempted,
+                    correctAnswers: resultData.correct,
+                    wrongAnswers: resultData.wrong,
+                    totalMarks: resultData.totalMarks,
+                    marksObtained: parseFloat(resultData.marksObtained),
+                    percentage: parseFloat(resultData.percentage),
+                    division: resultData.division,
+                    studentAnswers: studentAnswers,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    resultId: resultId,
+                    date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+                };
+
+                // Save to Firebase
+                // Structure: onlinetestresults -> testName -> results -> individual results
+                const docRef = await db.collection('onlinetestresults')
+                    .doc(sanitizedTestName)
+                    .collection('results')
+                    .add(resultToSave);
+
+                console.log("Result saved to Firebase with ID:", docRef.id);
+                return true;
+            } catch (error) {
+                console.error("Error saving result to Firebase:", error);
+                return false;
+            }
+        }
+
         // ===== TEST SUBMISSION & RESULT CALCULATION =====
         async function submitTest() {
             // Clear timer
@@ -1852,8 +1901,8 @@
             // Generate result ID
             resultId = 'RES' + Date.now() + Math.floor(Math.random() * 1000);
             
-            // Display results
-            displayResults({
+            // Prepare result data
+            currentResultData = {
                 totalQuestions,
                 attempted,
                 correct,
@@ -1863,7 +1912,17 @@
                 percentage: percentage.toFixed(2),
                 division,
                 statusClass
-            });
+            };
+            
+            // Save result to Firebase
+            const saveSuccess = await saveResultToFirebase(currentResultData);
+            
+            if (!saveSuccess) {
+                alert("Note: Result could not be saved to server, but you can still download your result.");
+            }
+            
+            // Display results
+            displayResults(currentResultData);
         }
 
         function displayResults(results) {
@@ -1917,6 +1976,7 @@
             currentQuestionIndex = 0;
             studentAnswers = {};
             studentDetails = {};
+            currentResultData = null;
             
             // Clear form
             document.getElementById('student-form').reset();
