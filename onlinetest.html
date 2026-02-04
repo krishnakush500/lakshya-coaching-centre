@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lakshya Coaching Center - Online Test Platform (Demo)</title>
+    <title>Study Point Coaching - Online Test Platform (Demo)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         /* ===== GLOBAL STYLES ===== */
         :root {
@@ -1110,16 +1113,16 @@
     <div id="page-test-list" class="page active">
         <div class="container">
             <div class="coaching-header">
-                <h1>LAKSHYA COACHING CENTER</h1>
-                <p>Bangra Patti & Jatauliya Chowk</p>
+                <h1>STUDY POINT COACHING CENTRE</h1>
+                <p>Muzaffarpur, Bihar</p>
                 <div class="details">
                     <div class="detail-item">
                         <i class="fas fa-user-tie"></i>
-                        <span>GUIDANCE BY: MR. MANISH SIR</span>
+                        <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-phone"></i>
-                        <span>Call: +91 7654204716</span>
+                        <span>Call: +91 6202608202</span>
                     </div>
                 </div>
             </div>
@@ -1127,14 +1130,17 @@
             <div class="card compact-card">
                 <h2>Available Tests</h2>
                 <p>Select a test to begin your examination.</p>
+                <div id="loading-tests" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading tests from Firebase...
+                </div>
             </div>
 
             <div id="tests-container" class="tests-grid">
-                <!-- Tests will be loaded here -->
+                <!-- Tests will be loaded here from Firebase -->
             </div>
 
             <div class="footer">
-                <p>LAKSHYA COACHING CENTER &copy; 2024 | DEMO VERSION</p>
+                <p>STUDY POINT COACHING CENTRE &copy; 2024 | DEMO VERSION</p>
             </div>
         </div>
     </div>
@@ -1143,16 +1149,16 @@
     <div id="page-student-details" class="page">
         <div class="container">
             <div class="coaching-header">
-                <h1>LAKSHYA COACHING CENTER</h1>
-                <p>Bangra Patti & Jatauliya Chowk</p>
+                <h1>STUDY POINT COACHING CENTRE</h1>
+                <p>Muzaffarpur, Bihar</p>
                 <div class="details">
                     <div class="detail-item">
                         <i class="fas fa-user-tie"></i>
-                        <span>GUIDANCE BY: MR. MANISH SIR</span>
+                        <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-phone"></i>
-                        <span>Call: +91 7654204716</span>
+                        <span>Call: +91 6202608202</span>
                     </div>
                 </div>
             </div>
@@ -1263,18 +1269,18 @@
             <div id="result-print-area" class="result-print-area">
                 <!-- Coaching Info -->
                 <div class="coaching-info">
-                    <div class="coaching-name">LAKSHYA COACHING CENTER</div>
+                    <div class="coaching-name">STUDY POINT COACHING CENTRE</div>
                     <div class="coaching-location">
-                        Bangra Patti & Jatauliya Chowk
+                        Muzaffarpur, Bihar
                     </div>
                     <div class="coaching-details">
                         <div class="coaching-detail director-info">
                             <i class="fas fa-user-tie"></i>
-                            <span>GUIDANCE BY: MR. MANISH SIR</span>
+                            <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
                         </div>
                         <div class="coaching-detail">
                             <i class="fas fa-phone"></i>
-                            <span>Call: +91 7654204716</span>
+                            <span>Call: +91 6202608202</span>
                         </div>
                     </div>
                 </div>
@@ -1359,12 +1365,22 @@
             
             <div class="result-footer">
                 <p>This is an electronically generated result. No signature required.</p>
-                <p>LAKSHYA COACHING CENTER &copy; 2024 | Result ID: <span id="result-id">-</span></p>
+                <p>STUDY POINT COACHING CENTRE &copy; 2024 | Result ID: <span id="result-id">-</span></p>
             </div>
         </div>
     </div>
 
     <script>
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkCWExAXf8ByBVEBQ_FL6Pk8JCuVJZssE",
+            authDomain: "soullink-d8341.firebaseapp.com",
+            projectId: "soullink-d8341",
+            storageBucket: "soullink-d8341.firebasestorage.app",
+            messagingSenderId: "321478607122",
+            appId: "1:321478607122:web:0084edc62793e358bef3cb"
+        };
+
         // ===== GLOBAL VARIABLES =====
         let currentPage = 'test-list';
         let tests = [];
@@ -1376,93 +1392,63 @@
         let timeRemaining = 0;
         let studentDetails = {};
         let resultId = '';
+        let db = null;
 
-        // ===== DEMO TESTS DATA =====
-        // Bihar Board Science - Hindi Medium
-        const demoTests = [
-            {
-                id: 'test-1',
-                testName: 'Science - Chapter 1: Chemical Reactions (रासायनिक अभिक्रियाएं)',
-                totalQuestions: 5,
-                totalMarks: 25,
-                duration: 15, // minutes
-                questionsText: `Q1. निम्नलिखित में से कौन-सा भौतिक परिवर्तन है?
-A) लोहे पर जंग लगना
-B) दूध से दही बनना
-C) काँच का टूटना
-D) खाद्य पदार्थ का पाचन
-Answer: C
-
-Q2. निम्नलिखित में से कौन सी ऊष्माक्षेपी अभिक्रिया है?
-A) श्वसन
-B) प्रकाश संश्लेषण
-C) बर्फ का पिघलना
-D) अमोनियम क्लोराइड का जल में घुलना
-Answer: A
-
-Q3. सोडियम धातु जल के साथ अभिक्रिया करके क्या बनाती है?
-A) सोडियम हाइड्रॉक्साइड और हाइड्रोजन गैस
-B) सोडियम क्लोराइड और ऑक्सीजन
-C) सोडियम कार्बोनेट और कार्बन डाइऑक्साइड
-D) सोडियम सल्फेट और सल्फर डाइऑक्साइड
-Answer: A
-
-Q4. लोहे पर जंग लगना किस प्रकार की अभिक्रिया है?
-A) संयोजन अभिक्रिया
-B) ऑक्सीकरण अभिक्रिया
-C) उदासीनीकरण अभिक्रिया
-D) अपघटन अभिक्रिया
-Answer: B
-
-Q5. निम्नलिखित में से कौन सा रेडॉक्स अभिक्रिया का उदाहरण है?
-A) सोडियम क्लोराइड का जल में घुलना
-B) कैल्सियम ऑक्साइड का जल के साथ अभिक्रिया
-C) लोहे का जंग लगना
-D) हाइड्रोक्लोरिक अम्ल और सोडियम हाइड्रॉक्साइड की अभिक्रिया
-Answer: C`
-            },
-            {
-                id: 'test-2',
-                testName: 'Science - Chapter 2: Acids, Bases and Salts (अम्ल, क्षारक एवं लवण)',
-                totalQuestions: 5,
-                totalMarks: 25,
-                duration: 15, // minutes
-                questionsText: `Q1. निम्नलिखित में से कौन सा प्राकृतिक अम्ल है?
-A) हाइड्रोक्लोरिक अम्ल
-B) सल्फ्यूरिक अम्ल
-C) साइट्रिक अम्ल
-D) नाइट्रिक अम्ल
-Answer: C
-
-Q2. pH पैमाने पर किसी उदासीन विलयन का pH मान क्या होता है?
-A) 0
-B) 7
-C) 14
-D) 10
-Answer: B
-
-Q3. अम्ल और क्षारक की अभिक्रिया से क्या बनता है?
-A) लवण और जल
-B) अम्ल और गैस
-C) क्षारक और गैस
-D) केवल जल
-Answer: A
-
-Q4. निम्नलिखित में से कौन सा अम्लीय लवण है?
-A) सोडियम क्लोराइड
-B) पोटैशियम सल्फेट
-C) सोडियम हाइड्रोजन कार्बोनेट
-D) कैल्सियम कार्बोनेट
-Answer: C
-
-Q5. फिनॉल्फथेलिन सूचक क्षारीय माध्यम में किस रंग का हो जाता है?
-A) नीला
-B) लाल
-C) गुलाबी
-D) पीला
-Answer: C`
+        // ===== FIREBASE INITIALIZATION =====
+        function initializeFirebase() {
+            try {
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                console.log("Firebase initialized successfully");
+                return true;
+            } catch (error) {
+                console.error("Firebase initialization error:", error);
+                showError("Failed to initialize Firebase. Please check your configuration.");
+                return false;
             }
-        ];
+        }
+
+        // ===== LOAD TESTS FROM FIREBASE =====
+        async function loadTestsFromFirebase() {
+            if (!db) {
+                showError("Database not initialized");
+                return;
+            }
+
+            try {
+                const loadingDiv = document.getElementById('loading-tests');
+                loadingDiv.style.display = 'block';
+                
+                // Get all tests from 'tests' collection
+                const querySnapshot = await db.collection('tests').get();
+                
+                tests = [];
+                querySnapshot.forEach(doc => {
+                    const testData = doc.data();
+                    // Add document ID to test data
+                    tests.push({
+                        id: doc.id,
+                        ...testData
+                    });
+                });
+                
+                console.log("Loaded tests from Firebase:", tests.length);
+                
+                if (tests.length === 0) {
+                    loadingDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> No tests available in Firebase';
+                    return;
+                }
+                
+                loadingDiv.style.display = 'none';
+                displayTests();
+                
+            } catch (error) {
+                console.error("Error loading tests from Firebase:", error);
+                document.getElementById('loading-tests').innerHTML = 
+                    '<i class="fas fa-exclamation-circle"></i> Error loading tests. Please try again later.';
+            }
+        }
 
         // ===== PAGE NAVIGATION FUNCTIONS =====
         function showPage(pageId) {
@@ -1480,11 +1466,6 @@ Answer: C`
         }
 
         // ===== PAGE 1: TEST LIST =====
-        function loadTests() {
-            tests = demoTests;
-            displayTests();
-        }
-
         function displayTests() {
             const container = document.getElementById('tests-container');
             
@@ -1581,15 +1562,24 @@ Answer: C`
 
         // ===== PAGE 3: TEST SCREEN =====
         function loadTestQuestions() {
-            if (!currentTest || !currentTest.questionsText) {
-                alert('Test questions not found!');
+            if (!currentTest) {
+                alert('Test not found!');
                 showPage('test-list');
                 return;
             }
             
             try {
-                // Parse questions from the questionsText field
-                currentQuestions = parseQuestions(currentTest.questionsText);
+                // Parse questions from the test data
+                // Assuming questions are stored in Firebase as an array of objects
+                // Each question object should have: text, options (array), correctAnswer
+                if (currentTest.questions && Array.isArray(currentTest.questions)) {
+                    currentQuestions = currentTest.questions;
+                } else if (currentTest.questionsText) {
+                    // Fallback to parsing from text format
+                    currentQuestions = parseQuestions(currentTest.questionsText);
+                } else {
+                    throw new Error('No questions found in test data');
+                }
                 
                 // Display test info
                 document.getElementById('current-test-name').textContent = currentTest.testName;
@@ -1709,7 +1699,24 @@ Answer: C`
             optionsContainer.innerHTML = '';
             
             const optionLabels = ['A', 'B', 'C', 'D'];
-            question.options.forEach((option, i) => {
+            
+            // Handle both array and object formats for options
+            let optionsArray = [];
+            if (Array.isArray(question.options)) {
+                optionsArray = question.options;
+            } else if (typeof question.options === 'object') {
+                // Convert object to array
+                optionsArray = [
+                    question.options.A || '',
+                    question.options.B || '',
+                    question.options.C || '',
+                    question.options.D || ''
+                ];
+            }
+            
+            optionsArray.forEach((option, i) => {
+                if (!option) return; // Skip empty options
+                
                 const optionId = `option-${index}-${i}`;
                 const isSelected = studentAnswers[index] === optionLabels[i];
                 
@@ -2014,10 +2021,25 @@ Answer: C`
             }
         }
 
+        // ===== HELPER FUNCTIONS =====
+        function showError(message) {
+            const container = document.getElementById('tests-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> ${message}
+                    </div>
+                `;
+            }
+        }
+
         // ===== INITIALIZE APP =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Load tests on initial page load
-            loadTests();
+            // Initialize Firebase
+            if (initializeFirebase()) {
+                // Load tests from Firebase
+                loadTestsFromFirebase();
+            }
             
             // Set up keyboard navigation for test screen
             document.addEventListener('keydown', function(e) {
