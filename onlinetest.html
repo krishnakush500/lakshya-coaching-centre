@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Point Coaching - Online Test Platform (Demo)</title>
+    <title>Lakshya Coaching Centre - Online Test Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -13,14 +13,16 @@
     <style>
         /* ===== GLOBAL STYLES ===== */
         :root {
-            --primary-blue: #1976D2;
-            --light-blue: #2196F3;
-            --dark-blue: #0D47A1;
+            --primary-green: #2E7D32;
+            --light-green: #4CAF50;
+            --dark-green: #1B5E20;
             --primary-red: #D32F2F;
             --light-red: #EF5350;
             --dark-red: #C62828;
             --primary-orange: #FF9800;
             --dark-orange: #F57C00;
+            --primary-purple: #7B1FA2;
+            --light-purple: #9C27B0;
             --white: #FFFFFF;
             --light-gray: #F5F5F5;
             --medium-gray: #E0E0E0;
@@ -68,7 +70,7 @@
 
         /* ===== HEADER / COACHING DETAILS ===== */
         .coaching-header {
-            background: linear-gradient(to right, var(--primary-blue), var(--dark-blue));
+            background: linear-gradient(to right, var(--primary-green), var(--dark-green));
             color: var(--white);
             padding: 15px;
             border-radius: var(--border-radius);
@@ -80,6 +82,12 @@
         .coaching-header h1 {
             font-size: 1.6rem;
             margin-bottom: 8px;
+        }
+
+        .coaching-header .subtitle {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
         }
 
         .coaching-header .details {
@@ -108,7 +116,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: var(--shadow);
-            border-left: 5px solid var(--primary-blue);
+            border-left: 5px solid var(--primary-green);
         }
 
         .test-card {
@@ -118,7 +126,7 @@
 
         .test-card:hover {
             transform: translateY(-5px);
-            border-left-color: var(--light-blue);
+            border-left-color: var(--light-green);
         }
 
         /* ===== BUTTONS ===== */
@@ -140,12 +148,12 @@
         }
 
         .btn-primary {
-            background-color: var(--primary-blue);
+            background-color: var(--primary-green);
             color: var(--white);
         }
 
         .btn-primary:hover {
-            background-color: var(--dark-blue);
+            background-color: var(--dark-green);
         }
 
         .btn-secondary {
@@ -176,6 +184,15 @@
             background-color: var(--dark-orange);
         }
 
+        .btn-purple {
+            background-color: var(--primary-purple);
+            color: var(--white);
+        }
+
+        .btn-purple:hover {
+            background-color: var(--light-purple);
+        }
+
         .btn-block {
             display: block;
             width: 100%;
@@ -196,7 +213,7 @@
 
         .test-title {
             font-size: 1.3rem;
-            color: var(--primary-blue);
+            color: var(--primary-green);
             margin-bottom: 10px;
             padding-bottom: 8px;
             border-bottom: 1px solid var(--medium-gray);
@@ -218,7 +235,7 @@
         }
 
         .test-detail i {
-            color: var(--primary-blue);
+            color: var(--primary-green);
         }
 
         /* ===== FORM STYLES ===== */
@@ -245,12 +262,12 @@
 
         .form-control:focus {
             outline: none;
-            border-color: var(--primary-blue);
+            border-color: var(--primary-green);
         }
 
         select.form-control {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%231976D2' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%232E7D32' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
             background-size: 14px;
@@ -277,7 +294,7 @@
 
         .test-name {
             font-size: 1.2rem;
-            color: var(--primary-blue);
+            color: var(--primary-green);
             font-weight: 600;
             margin-bottom: 4px;
             line-height: 1.3;
@@ -367,7 +384,7 @@
         }
 
         .answered-dot {
-            background-color: var(--primary-blue);
+            background-color: var(--primary-green);
         }
 
         .not-answered-dot {
@@ -388,7 +405,7 @@
 
         .question-number {
             font-size: 1rem;
-            color: var(--primary-blue);
+            color: var(--primary-green);
             margin-bottom: 8px;
             font-weight: 600;
         }
@@ -418,12 +435,12 @@
 
         .option:hover {
             background-color: var(--light-gray);
-            border-color: var(--primary-blue);
+            border-color: var(--primary-green);
         }
 
         .option.selected {
-            background-color: rgba(25, 118, 210, 0.1);
-            border-color: var(--primary-blue);
+            background-color: rgba(46, 125, 50, 0.1);
+            border-color: var(--primary-green);
         }
 
         .option input {
@@ -435,7 +452,7 @@
         .option-label {
             font-weight: 600;
             margin-right: 8px;
-            color: var(--primary-blue);
+            color: var(--primary-green);
             min-width: 18px;
             flex-shrink: 0;
         }
@@ -508,7 +525,7 @@
 
         .result-print-area {
             background-color: white;
-            border: 2px solid var(--primary-blue);
+            border: 2px solid var(--primary-green);
             border-radius: 10px;
             padding: 18px;
             margin: 0 auto 15px;
@@ -521,12 +538,12 @@
         .coaching-info {
             text-align: center;
             margin-bottom: 18px;
-            border-bottom: 3px solid var(--primary-blue);
+            border-bottom: 3px solid var(--primary-green);
             padding-bottom: 12px;
         }
 
         .coaching-name {
-            color: var(--primary-blue);
+            color: var(--primary-green);
             font-size: 1.6rem;
             margin-bottom: 6px;
             font-weight: 800;
@@ -558,7 +575,7 @@
         }
 
         .director-info {
-            background-color: rgba(25, 118, 210, 0.1);
+            background-color: rgba(46, 125, 50, 0.1);
             padding: 8px 10px;
             border-radius: 5px;
             margin-top: 8px;
@@ -609,7 +626,7 @@
         }
 
         .result-table th {
-            background-color: var(--primary-blue);
+            background-color: var(--primary-green);
             color: var(--white);
             padding: 10px;
             text-align: left;
@@ -627,7 +644,7 @@
 
         .result-table .highlight {
             font-weight: bold;
-            color: var(--primary-blue);
+            color: var(--primary-green);
         }
 
         .result-table .wrong {
@@ -649,9 +666,9 @@
         }
 
         .first-division {
-            background-color: rgba(25, 118, 210, 0.2);
-            color: var(--primary-blue);
-            border: 3px solid var(--primary-blue);
+            background-color: rgba(46, 125, 50, 0.2);
+            color: var(--primary-green);
+            border: 3px solid var(--primary-green);
         }
 
         .second-division {
@@ -699,7 +716,7 @@
         }
 
         .loading i {
-            color: var(--primary-blue);
+            color: var(--primary-green);
             margin-right: 8px;
         }
 
@@ -714,8 +731,8 @@
         }
 
         .success-message {
-            background-color: rgba(25, 118, 210, 0.1);
-            color: var(--primary-blue);
+            background-color: rgba(46, 125, 50, 0.1);
+            color: var(--primary-green);
             padding: 12px;
             border-radius: var(--border-radius);
             margin: 15px 0;
@@ -942,7 +959,7 @@
             
             .result-print-area {
                 padding: 12px;
-                border: 1px solid var(--primary-blue);
+                border: 1px solid var(--primary-green);
                 box-shadow: 0 0 8px rgba(0,0,0,0.05);
             }
             
@@ -1113,16 +1130,17 @@
     <div id="page-test-list" class="page active">
         <div class="container">
             <div class="coaching-header">
-                <h1>STUDY POINT COACHING CENTRE</h1>
-                <p>Muzaffarpur, Bihar</p>
+                <h1>LAKSHYA COACHING CENTRE</h1>
+                <div class="subtitle">लक्ष्य कोचिंग सेंटर</div>
+                <p>स्थान: बंगरा पट्टी & जटौलिया चौक</p>
                 <div class="details">
                     <div class="detail-item">
-                        <i class="fas fa-user-tie"></i>
-                        <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>GUIDANCE BY: MR. MANISH SIR</span>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-phone"></i>
-                        <span>Call: +91 6202608202</span>
+                        <span>Call: +91 7654204716</span>
                     </div>
                 </div>
             </div>
@@ -1140,7 +1158,7 @@
             </div>
 
             <div class="footer">
-                <p>STUDY POINT COACHING CENTRE &copy; 2024 | DEMO VERSION</p>
+                <p>LAKSHYA COACHING CENTRE &copy; 2024 | Online Test Platform</p>
             </div>
         </div>
     </div>
@@ -1149,16 +1167,17 @@
     <div id="page-student-details" class="page">
         <div class="container">
             <div class="coaching-header">
-                <h1>STUDY POINT COACHING CENTRE</h1>
-                <p>Muzaffarpur, Bihar</p>
+                <h1>LAKSHYA COACHING CENTRE</h1>
+                <div class="subtitle">लक्ष्य कोचिंग सेंटर</div>
+                <p>स्थान: बंगरा पट्टी & जटौलिया चौक</p>
                 <div class="details">
                     <div class="detail-item">
-                        <i class="fas fa-user-tie"></i>
-                        <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>GUIDANCE BY: MR. MANISH SIR</span>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-phone"></i>
-                        <span>Call: +91 6202608202</span>
+                        <span>Call: +91 7654204716</span>
                     </div>
                 </div>
             </div>
@@ -1269,18 +1288,18 @@
             <div id="result-print-area" class="result-print-area">
                 <!-- Coaching Info -->
                 <div class="coaching-info">
-                    <div class="coaching-name">STUDY POINT COACHING CENTRE</div>
+                    <div class="coaching-name">LAKSHYA COACHING CENTRE</div>
                     <div class="coaching-location">
-                        Muzaffarpur, Bihar
+                        स्थान: बंगरा पट्टी & जटौलिया चौक
                     </div>
                     <div class="coaching-details">
                         <div class="coaching-detail director-info">
-                            <i class="fas fa-user-tie"></i>
-                            <span>DIRECTOR: GUDDU KUMAR (B.Sc, B.Ed CTET)</span>
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>GUIDANCE BY: MR. MANISH SIR</span>
                         </div>
                         <div class="coaching-detail">
                             <i class="fas fa-phone"></i>
-                            <span>Call: +91 6202608202</span>
+                            <span>Call: +91 7654204716</span>
                         </div>
                     </div>
                 </div>
@@ -1365,7 +1384,7 @@
             
             <div class="result-footer">
                 <p>This is an electronically generated result. No signature required.</p>
-                <p>STUDY POINT COACHING CENTRE &copy; 2024 | Result ID: <span id="result-id">-</span></p>
+                <p>LAKSHYA COACHING CENTRE &copy; 2024 | Result ID: <span id="result-id">-</span></p>
             </div>
         </div>
     </div>
@@ -1834,12 +1853,13 @@
                     studentAnswers: studentAnswers,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     resultId: resultId,
+                    coachingName: "Lakshya Coaching Centre",
                     date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
                 };
 
                 // Save to Firebase
-                // Structure: onlinetestresults -> testName -> results -> individual results
-                const docRef = await db.collection('onlinetestresults')
+                // Structure: lakshyaresults -> testName -> results -> individual results
+                const docRef = await db.collection('lakshyacoachingresults')
                     .doc(sanitizedTestName)
                     .collection('results')
                     .add(resultToSave);
@@ -1899,7 +1919,7 @@
             }
             
             // Generate result ID
-            resultId = 'RES' + Date.now() + Math.floor(Math.random() * 1000);
+            resultId = 'LKC' + Date.now() + Math.floor(Math.random() * 1000);
             
             // Prepare result data
             currentResultData = {
@@ -2011,7 +2031,7 @@
                 clone.style.width = '700px';
                 clone.style.padding = '30px';
                 clone.style.fontSize = '14px';
-                clone.style.border = '2px solid #1976D2';
+                clone.style.border = '2px solid #2E7D32';
                 clone.style.borderRadius = '10px';
                 
                 // Add clone to body temporarily
@@ -2069,7 +2089,7 @@
                 pdf.text(`Result ID: ${resultId} | Generated on: ${new Date().toLocaleDateString()}`, 105, 292, { align: 'center' });
                 
                 // Save the PDF
-                pdf.save(`Result_${studentDetails.rollNumber}_${resultId}.pdf`);
+                pdf.save(`Lakshya_Result_${studentDetails.rollNumber}_${resultId}.pdf`);
                 
             } catch (error) {
                 console.error('Error generating PDF:', error);
