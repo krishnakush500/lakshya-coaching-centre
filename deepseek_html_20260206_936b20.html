@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Test Upload Panel | SoulLink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #f1f8e9;
+            --text: #333;
+            --light-text: #666;
+            --border: #ddd;
+            --success: #4caf50;
+            --error: #f44336;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        h1 {
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: var(--light-text);
+            font-size: 1.1rem;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+            font-size: 1.8rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        label i {
+            color: var(--primary);
+        }
+        
+        input, textarea {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+        
+        textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+        
+        .helper-text {
+            background-color: var(--secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .helper-text h4 {
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .helper-text ul {
+            padding-left: 20px;
+            color: var(--light-text);
+        }
+        
+        .helper-text li {
+            margin-bottom: 5px;
+        }
+        
+        .example {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            border-left: 3px solid var(--border);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .message.show {
+            display: flex;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+        
+        .parse-info {
+            background-color: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+            display: none;
+        }
+        
+        .parse-info.show {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        @media (max-width: 768px) {
+            .panel {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                padding: 14px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h1>SoulLink Teacher Portal</h1>
+            </div>
+            <p class="subtitle">Upload tests and quizzes for your students</p>
+        </header>
+        
+        <main>
+            <div class="panel">
+                <h2><i class="fas fa-upload"></i> Upload New Test</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="testName"><i class="fas fa-pen"></i> Test Name</label>
+                        <input type="text" id="testName" placeholder="e.g. Physics Midterm Exam">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalQuestions"><i class="fas fa-list-ol"></i> Total Questions</label>
+                        <input type="number" id="totalQuestions" placeholder="e.g. 30" min="1" max="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalMarks"><i class="fas fa-star"></i> Total Marks</label>
+                        <input type="number" id="totalMarks" placeholder="e.g. 100" min="1" max="500">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration"><i class="fas fa-clock"></i> Duration (minutes)</label>
+                        <input type="number" id="duration" placeholder="e.g. 60" min="1" max="300">
+                    </div>
+                </div>
+                
+                <div class="helper-text">
+                    <h4><i class="fas fa-info-circle"></i> How to format your questions:</h4>
+                    <ul>
+                        <li>Each question should start with "Q1.", "Q2.", etc.</li>
+                        <li>Options should be on separate lines with (A), (B), (C), (D)</li>
+                        <li>Answer should be on a new line with "Answer: " followed by the correct option letter</li>
+                        <li>Leave one blank line between questions for better readability</li>
+                    </ul>
+                    
+                    <div class="example">
+Q1. What is the capital of France?<br>
+(A) London<br>
+(B) Berlin<br>
+(C) Paris<br>
+(D) Madrid<br>
+Answer: C<br>
+<br>
+Q2. Which planet is known as the Red Planet?<br>
+(A) Earth<br>
+(B) Mars<br>
+(C) Jupiter<br>
+(D) Venus<br>
+Answer: B
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="questionsText"><i class="fas fa-question-circle"></i> Questions Text</label>
+                    <textarea id="questionsText" placeholder="Paste all your questions here in the format shown above..."></textarea>
+                    <div id="parseInfo" class="parse-info">
+                        Parsed: <span id="parsedCount">0</span> questions successfully
+                    </div>
+                </div>
+                
+                <button id="uploadBtn" class="btn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Test to Database
+                </button>
+                
+                <div id="message" class="message"></div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>SoulLink Education Platform &copy; 2023 | Teacher Test Upload Panel</p>
+            <p>All uploaded tests are securely stored in Firebase Firestore</p>
+        </footer>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkCWExAXf8ByBVEBQ_FL6Pk8JCuVJZssE",
+            authDomain: "soullink-d8341.firebaseapp.com",
+            projectId: "soullink-d8341",
+            storageBucket: "soullink-d8341.firebasestorage.app",
+            messagingSenderId: "321478607122",
+            appId: "1:321478607122:web:0084edc62793e358bef3cb"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // DOM elements
+        const testNameInput = document.getElementById('testName');
+        const totalQuestionsInput = document.getElementById('totalQuestions');
+        const totalMarksInput = document.getElementById('totalMarks');
+        const durationInput = document.getElementById('duration');
+        const questionsTextInput = document.getElementById('questionsText');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const messageDiv = document.getElementById('message');
+        const parseInfoDiv = document.getElementById('parseInfo');
+        const parsedCountSpan = document.getElementById('parsedCount');
+        
+        // Parse questions from text
+        function parseQuestions(text) {
+            const questions = [];
+            const lines = text.split('\n');
+            let currentQuestion = null;
+            let optionBuffer = [];
+            let questionNumber = 0;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Skip empty lines
+                if (!line) continue;
+                
+                // Detect question start (Q1., Q2., 1., etc.)
+                const questionMatch = line.match(/^(Q?\d+\.|Question\s*\d+\.?)\s*(.+)/i);
+                if (questionMatch) {
+                    // Save previous question if exists
+                    if (currentQuestion && optionBuffer.length > 0) {
+                        currentQuestion.options = [...optionBuffer];
+                        questions.push(currentQuestion);
+                    }
+                    
+                    // Start new question
+                    questionNumber++;
+                    currentQuestion = {
+                        text: questionMatch[2].trim(),
+                        options: [],
+                        correctAnswer: ''
+                    };
+                    optionBuffer = [];
+                    continue;
+                }
+                
+                // Detect options (A), (B), etc.
+                const optionMatch = line.match(/^\(([A-D])\)\s*(.+)/i);
+                if (optionMatch && currentQuestion) {
+                    optionBuffer.push(optionMatch[2].trim());
+                    continue;
+                }
+                
+                // Detect answer
+                const answerMatch = line.match(/^Answer:\s*([A-D])/i);
+                if (answerMatch && currentQuestion) {
+                    currentQuestion.correctAnswer = answerMatch[1].toUpperCase();
+                    continue;
+                }
+                
+                // If we have a current question but no match, append to question text
+                if (currentQuestion && !optionMatch && !answerMatch) {
+                    // Check if this might be continuation of previous line
+                    if (line.match(/^[a-d]\)/i) && optionBuffer.length > 0) {
+                        // Handle a) b) c) d) format
+                        const altOptionMatch = line.match(/^([a-d])\)\s*(.+)/i);
+                        if (altOptionMatch) {
+                            optionBuffer.push(altOptionMatch[2].trim());
+                        }
+                    } else if (!line.match(/^\d+\./)) {
+                        // Append to question text if not a new numbered question
+                        currentQuestion.text += ' ' + line;
+                    }
+                }
+            }
+            
+            // Add the last question
+            if (currentQuestion && optionBuffer.length > 0) {
+                currentQuestion.options = [...optionBuffer];
+                if (currentQuestion.correctAnswer) {
+                    questions.push(currentQuestion);
+                }
+            }
+            
+            // Handle single-line format
+            if (questions.length === 0) {
+                return parseSingleLineFormat(text);
+            }
+            
+            return questions;
+        }
+        
+        // Parse single-line format
+        function parseSingleLineFormat(text) {
+            const questions = [];
+            const questionBlocks = text.split(/\n\s*\n|Q\d+\./i).filter(block => block.trim());
+            
+            for (let block of questionBlocks) {
+                block = block.trim();
+                if (!block) continue;
+                
+                const lines = block.split('\n').map(line => line.trim()).filter(line => line);
+                if (lines.length < 6) continue; // Need at least Q, 4 options, answer
+                
+                const questionText = lines[0].replace(/^\d+\.\s*/, '');
+                const options = [];
+                let correctAnswer = '';
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i];
+                    
+                    const optionMatch = line.match(/^\(?([A-D])\)?\s*(.+)/i);
+                    if (optionMatch) {
+                        options.push(optionMatch[2].trim());
+                    }
+                    
+                    const answerMatch = line.match(/^Answer:\s*([A-D])/i);
+                    if (answerMatch) {
+                        correctAnswer = answerMatch[1].toUpperCase();
+                    }
+                }
+                
+                if (questionText && options.length >= 4 && correctAnswer) {
+                    questions.push({
+                        text: questionText,
+                        options: options.slice(0, 4),
+                        correctAnswer: correctAnswer
+                    });
+                }
+            }
+            
+            return questions;
+        }
+        
+        // Show message function
+        function showMessage(text, isSuccess) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${isSuccess ? 'success' : 'error'} show`;
+            
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            if (isSuccess) {
+                setTimeout(() => {
+                    messageDiv.classList.remove('show');
+                }, 5000);
+            }
+        }
+        
+        // Update parse info
+        function updateParseInfo(count) {
+            if (count > 0) {
+                parsedCountSpan.textContent = count;
+                parseInfoDiv.classList.add('show');
+            } else {
+                parseInfoDiv.classList.remove('show');
+            }
+        }
+        
+        // Validate form
+        function validateForm() {
+            if (!testNameInput.value.trim()) {
+                showMessage('Please enter a test name', false);
+                testNameInput.focus();
+                return false;
+            }
+            
+            if (!totalQuestionsInput.value || parseInt(totalQuestionsInput.value) <= 0) {
+                showMessage('Please enter a valid number of questions', false);
+                totalQuestionsInput.focus();
+                return false;
+            }
+            
+            if (!totalMarksInput.value || parseInt(totalMarksInput.value) <= 0) {
+                showMessage('Please enter valid total marks', false);
+                totalMarksInput.focus();
+                return false;
+            }
+            
+            if (!durationInput.value || parseInt(durationInput.value) <= 0) {
+                showMessage('Please enter a valid duration in minutes', false);
+                durationInput.focus();
+                return false;
+            }
+            
+            const questionsText = questionsTextInput.value.trim();
+            if (!questionsText) {
+                showMessage('Please paste your questions in the text area', false);
+                questionsTextInput.focus();
+                return false;
+            }
+            
+            // Parse and validate questions
+            const parsedQuestions = parseQuestions(questionsText);
+            if (parsedQuestions.length === 0) {
+                showMessage('Could not parse any valid questions. Please check the format.', false);
+                return false;
+            }
+            
+            const totalQuestions = parseInt(totalQuestionsInput.value);
+            if (parsedQuestions.length !== totalQuestions) {
+                showMessage(`Warning: Parsed ${parsedQuestions.length} questions but Total Questions field says ${totalQuestions}. Please verify.`, false);
+                // Continue anyway with warning
+            }
+            
+            updateParseInfo(parsedQuestions.length);
+            return parsedQuestions;
+        }
+        
+        // Clear form
+        function clearForm() {
+            testNameInput.value = '';
+            totalQuestionsInput.value = '';
+            totalMarksInput.value = '';
+            durationInput.value = '';
+            questionsTextInput.value = '';
+            parseInfoDiv.classList.remove('show');
+        }
+        
+        // Upload test to Firestore
+        async function uploadTest() {
+            // Validate form and parse questions
+            const parsedQuestions = validateForm();
+            if (!parsedQuestions) {
+                return;
+            }
+            
+            // Disable button and show loading
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<div class="loading"></div> Uploading...';
+            
+            try {
+                // Prepare test data
+                const testData = {
+                    testName: testNameInput.value.trim(),
+                    totalQuestions: parseInt(totalQuestionsInput.value),
+                    totalMarks: parseInt(totalMarksInput.value),
+                    duration: parseInt(durationInput.value),
+                    questions: parsedQuestions,
+                    questionsText: questionsTextInput.value.trim(), // Keep original text for reference
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'active'
+                };
+                
+                // Save to Firestore
+                await db.collection('tests').add(testData);
+                
+                // Show success message
+                showMessage(`Test "${testData.testName}" uploaded successfully! Parsed ${parsedQuestions.length} questions.`, true);
+                
+                // Clear form
+                clearForm();
+                
+            } catch (error) {
+                console.error('Error uploading test:', error);
+                showMessage(`Upload failed: ${error.message}`, false);
+            } finally {
+                // Re-enable button
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Test to Database';
+            }
+        }
+        
+        // Event listeners
+        uploadBtn.addEventListener('click', uploadTest);
+        
+        // Parse questions when text changes
+        questionsTextInput.addEventListener('input', () => {
+            const text = questionsTextInput.value.trim();
+            if (text) {
+                const parsedQuestions = parseQuestions(text);
+                updateParseInfo(parsedQuestions.length);
+            } else {
+                parseInfoDiv.classList.remove('show');
+            }
+        });
+        
+        // Allow Enter key in textarea but prevent in other fields
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+        
+        // Add Enter key submission for the form
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                uploadTest();
+            }
+        });
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('Teacher Test Upload Panel initialized');
+            console.log('Firebase connected to project:', firebaseConfig.projectId);
+        });
+    </script>
+</body>
+</html>
