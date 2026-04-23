@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>✏️ Update Student Fee · लक्ष्य कोचिंग सेंटर</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: #f0f5fa; padding: 16px 12px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Coaching Header */
+        .coaching-header { background: linear-gradient(135deg, #1a3a6e, #2a5a9e); border-radius: 40px; padding: 14px 22px; margin-bottom: 20px; color: white; text-align: center; }
+        .coaching-header h1 { font-size: 1.5rem; margin: 0; }
+        .coaching-header p { font-size: 0.8rem; margin: 5px 0 0; opacity: 0.9; }
+        
+        .page-header { background: white; border-radius: 40px; padding: 14px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .page-header h1 { font-size: 1.6rem; color: #113a5e; display: flex; align-items: center; gap: 8px; margin: 0; }
+        .back-link a { color: #ff9800; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 500; padding: 6px 16px; background: #fff3e0; border-radius: 40px; }
+        
+        .filter-panel { background: white; border-radius: 50px; padding: 16px 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 25px; margin-bottom: 20px; }
+        .filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .filter-group label { font-weight: 600; color: #1a3a6e; display: flex; align-items: center; gap: 4px; margin: 0; }
+        select, .search-input { background: #e8f2ff; border: 1px solid #b1cdf0; border-radius: 40px; padding: 8px 20px; font-size: 0.95rem; color: #10345c; outline: none; }
+        .search-input { width: 200px; cursor: text; }
+        
+        .download-btn { background: #dc2626; color: white; border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+        .download-btn:hover { background: #b91c1c; }
+        
+        .table-card { background: white; border-radius: 30px; padding: 16px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #1a3a6e; color: white; padding: 12px 8px; font-weight: 600; font-size: 0.9rem; text-align: left; }
+        th:first-child { border-radius: 16px 0 0 0; }
+        th:last-child { border-radius: 0 16px 0 0; }
+        td { padding: 12px 8px; border-bottom: 1px solid #e0eaf5; vertical-align: middle; cursor: pointer; }
+        tr { cursor: pointer; transition: 0.1s; }
+        tr:hover td { background: #fff8ed; }
+        
+        .student-name { font-weight: 600; color: #1a3a6e; cursor: pointer; }
+        .student-name:hover { text-decoration: underline; color: #ff9800; }
+        .father-name { font-size: 0.85rem; color: #5f6b7a; }
+        .amount-badge { background: #e8f0fe; padding: 4px 10px; border-radius: 30px; font-weight: 600; display: inline-block; font-size: 0.9rem; }
+        .due-badge { background: #fee2e2; color: #b91c1c; padding: 4px 10px; border-radius: 30px; font-weight: 600; display: inline-block; }
+        .paid-badge { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 30px; font-weight: 600; display: inline-block; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .update-btn { background: #ff9800; color: white; border: none; padding: 6px 14px; border-radius: 40px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; }
+        .update-btn:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.6; }
+        .delete-btn { background: #dc2626; color: white; border: none; padding: 6px 14px; border-radius: 40px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; }
+        .delete-btn:hover { background: #b91c1c; }
+        .history-btn { background: #6c757d; color: white; border: none; padding: 6px 14px; border-radius: 40px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; }
+        
+        .loading { text-align: center; padding: 40px; font-size: 1.1rem; color: #1a3a6e; }
+        .empty-message { text-align: center; padding: 40px; background: white; border-radius: 30px; color: #5f6b7a; }
+        
+        .progress-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .progress-card { background: white; border-radius: 30px; padding: 30px; text-align: center; max-width: 350px; width: 90%; }
+        .progress-bar-container { width: 100%; height: 16px; background: #e8f0fe; border-radius: 30px; overflow: hidden; margin: 15px 0; }
+        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff9800, #f57c00); border-radius: 30px; transition: width 0.3s ease; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #e8f0fe; border-top: 4px solid #ff9800; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .transaction-item { background: #f8faff; border-radius: 16px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #ff9800; }
+        .invoice-small-btn { background: #16a34a; color: white; border: none; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; }
+        
+        @media (max-width: 600px) {
+            .page-header h1 { font-size: 1.3rem; }
+            .filter-group { width: 100%; }
+            select, .search-input { width: 100%; }
+            td, th { padding: 8px 5px; font-size: 0.8rem; }
+            .action-buttons { flex-direction: column; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- लक्ष्य कोचिंग सेंटर Header -->
+    <div class="coaching-header">
+        <h1>🏆 लक्ष्य कोचिंग सेंटर 🏆</h1>
+        <p><i class="fas fa-user-graduate"></i> GUIDANCE BY: MR. MANISH SIR | <i class="fas fa-map-marker-alt"></i> बंगरा पट्टी & जटौलिया चौक | <i class="fas fa-phone"></i> +91 7654204716</p>
+    </div>
+    
+    <div class="page-header">
+        <h1><i class="fas fa-edit"></i> Update Student Fee</h1>
+        <div class="back-link"><a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard पर जाएं</a></div>
+    </div>
+    <div class="filter-panel">
+        <div class="filter-group"><label><i class="fas fa-search"></i> Roll No खोजें</label><input type="text" id="rollSearchInput" class="search-input" placeholder="Roll number डालें..."></div>
+        <div class="filter-group"><label><i class="fas fa-calendar-alt"></i> Session</label><select id="sessionFilter"><option value="2024-25">2024-25</option><option value="2025-26">2025-26</option><option value="2026-27" selected>2026-27</option></select></div>
+        <div class="filter-group"><label><i class="fas fa-school"></i> Class</label><select id="classFilter"><option value="All">All Classes</option><option value="Class 6">Class 6</option><option value="Class 7">Class 7</option><option value="Class 8">Class 8</option><option value="Class 9">Class 9</option><option value="Class 10">Class 10</option><option value="Class 11">Class 11</option><option value="Class 12">Class 12</option></select></div>
+        <div class="filter-group"><button id="downloadPdfBtn" class="download-btn"><i class="fas fa-file-pdf"></i> PDF Report</button></div>
+    </div>
+    <div class="table-card"><div id="studentsTableContainer"><div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading students...</div></div></div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content" style="border-radius: 25px;"><div class="modal-header"><h5 class="modal-title" style="color:#ff9800;"><i class="fas fa-rupee-sign"></i> Update Fee</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="modalStudentInfo" style="background:#fff8ed;padding:15px;border-radius:18px;margin-bottom:20px;"></div><div class="mb-3"><label class="form-label fw-bold">Additional Amount (₹)</label><input type="number" id="additionalAmount" class="form-control" min="1" placeholder="Enter amount" style="border-radius:20px;"></div><div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="generateInvoiceCheck" checked><label class="form-check-label fw-bold"><i class="fas fa-file-invoice"></i> Generate Invoice</label></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" id="confirmUpdateBtn" class="btn btn-primary" style="background:#ff9800;">Update</button></div></div></div></div>
+
+<div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" style="color:#ff9800;"><i class="fas fa-history"></i> Transaction History</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="historyStudentInfo" style="background:#fff8ed;padding:15px;border-radius:18px;margin-bottom:20px;"></div><div id="transactionsList"></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>
+
+<div id="progressOverlay" class="progress-overlay"><div class="progress-card"><div class="spinner"></div><h3>Processing</h3><div class="progress-bar-container"><div id="progressFill" class="progress-bar-fill"></div></div><div id="progressText" class="progress-text">0% Complete</div></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+// ✅ Firebase Configuration (लक्ष्य कोचिंग सेंटर)
+const firebaseConfig = {
+    apiKey: "AIzaSyBoAqrgPwwM7GNyURqXrJEYWPihKKR8VGg",
+    authDomain: "quest-coaching.firebaseapp.com",
+    databaseURL: "https://quest-coaching-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "quest-coaching",
+    storageBucket: "quest-coaching.firebasestorage.app",
+    messagingSenderId: "131948734089",
+    appId: "1:131948734089:web:f4ba25110c8b1298360858"
+};
+
+let db, feesCollection, transactionsCollection;
+try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    feesCollection = db.collection('fees');
+    transactionsCollection = db.collection('transactions');
+} catch (error) { console.error(error); }
+
+const sessionFilter = document.getElementById('sessionFilter');
+const classFilter = document.getElementById('classFilter');
+const rollSearchInput = document.getElementById('rollSearchInput');
+const tableContainer = document.getElementById('studentsTableContainer');
+const modalStudentInfo = document.getElementById('modalStudentInfo');
+const additionalAmount = document.getElementById('additionalAmount');
+const generateInvoiceCheck = document.getElementById('generateInvoiceCheck');
+const confirmUpdateBtn = document.getElementById('confirmUpdateBtn');
+const progressOverlay = document.getElementById('progressOverlay');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+
+const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+const historyModal = new bootstrap.Modal(document.getElementById('historyModal'));
+
+let allStudents = [];
+let selectedStudent = null;
+
+// लक्ष्य कोचिंग सेंटर Details
+const COACHING_DETAILS = {
+    name: "लक्ष्य कोचिंग सेंटर",
+    phone: "7654204716",
+    email: "laxshyacoaching@gmail.com",
+    address: "बंगरा पट्टी & जटौलिया चौक, गोपालगंज, बिहार",
+    director: "MR. MANISH SIR",
+    msme: "LAKSHYA-2024-001",
+    bank: {
+        accountName: "LAKSHYA COACHING CENTRE",
+        bankName: "Bank of India, Gopalganj",
+        accountNumber: "123456789012",
+        ifsc: "BKID0004567",
+        upi: "7654204716@ybl"
+    }
+};
+
+const TERMS_CONDITIONS_HINDI = [
+    "एक बार जमा की गई फीस किसी भी परिस्थिति में वापस (Refund) या स्थानांतरित (Transfer) नहीं की जाएगी।",
+    "यदि आप ट्यूशन शुल्क दो किश्तों (Installments) में जमा करते हैं, तो पहली किश्त कुल शुल्क (Fee) का 50% नामांकन के समय और दूसरी किश्त बाकी का 50% शुल्क (Fee) नामांकन की तिथि से एक माह के भीतर जमा करनी होगी।",
+    "दूसरी किश्त (Installment) समय पर जमा न होने की स्थिति में छात्र के कक्षा प्रवेश पर प्रतिबंध लगाया जा सकता है।",
+    "बिना किसी पूर्व सूचना के लगातार 10 दिनों तक अनुपस्थित रहने पर छात्र का नामांकन रद्द (नाम काटा) किया जा सकता है।",
+    "संस्थान में अभद्र व्यवहार करने या मोबाइल का दुरुपयोग करने पर छात्र का नामांकन तत्काल प्रभाव से रद्द किया जा सकता है।",
+    "छात्र के व्यक्तिगत सामान (जैसे- साइकिल, मोबाइल, बैग आदि) की सुरक्षा की पूरी जिम्मेदारी स्वयं छात्र की होगी।",
+    "संस्थान के पास बैच के समय और नियमों में किसी भी प्रकार के बदलाव का पूर्ण अधिकार सुरक्षित है।",
+    "किसी भी प्रकार के कानूनी विवाद या मतभेद की स्थिति में, न्यायिक क्षेत्राधिकार केवल जिला न्यायालय, गोपालगंज (बिहार) के अधीन होगा।"
+];
+
+function generateInvoiceNumber() { 
+    return "LKC" + Date.now().toString().slice(-8) + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+}
+
+function showSuccessToast(m) { Swal.fire({ icon: 'success', title: 'सफल!', text: m, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 }); }
+function showErrorToast(m) { Swal.fire({ icon: 'error', title: 'त्रुटि!', text: m, toast: true, position: 'top-end', showConfirmButton: false, timer: 4000 }); }
+async function showDeleteConfirmation(n) { return await Swal.fire({ title: 'पुष्टि?', html: `<strong>${n}</strong> को हटाएं?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', confirmButtonText: 'हाँ, हटाएं!' }); }
+function showFullyPaidPopup(n) { Swal.fire({ title: 'फीस पूर्ण!', html: `<strong>${n}</strong> की पूरी फीस जमा हो चुकी है।`, icon: 'info' }); }
+function updateProgress(p) { progressFill.style.width = p + '%'; progressText.textContent = p + '% Complete'; }
+function showProgress() { progressOverlay.style.display = 'flex'; updateProgress(0); }
+function hideProgress() { progressOverlay.style.display = 'none'; }
+
+async function loadStudents() {
+    if (!feesCollection) { tableContainer.innerHTML = '<div class="empty-message">Firebase not connected</div>'; return; }
+    try {
+        const snapshot = await feesCollection.get();
+        allStudents = [];
+        snapshot.forEach(doc => { allStudents.push({ id: doc.id, ...doc.data() }); });
+        renderTable();
+    } catch (error) { tableContainer.innerHTML = '<div class="empty-message">Error loading: ' + error.message + '</div>'; }
+}
+
+function renderTable() {
+    let filtered = allStudents.filter(s => s.session === sessionFilter.value);
+    if (classFilter.value !== 'All') filtered = filtered.filter(s => s.class === classFilter.value);
+    const searchRoll = rollSearchInput.value.trim().toLowerCase();
+    if (searchRoll) filtered = filtered.filter(s => (s.roll_number || '').toString().toLowerCase().includes(searchRoll));
+    
+    if (filtered.length === 0) { tableContainer.innerHTML = '<div class="empty-message">No students found</div>'; return; }
+    
+    filtered.sort((a, b) => (b.due_amount || 0) - (a.due_amount || 0));
+    
+    let html = `<table><thead>
+        <tr><th>Roll</th><th>Student Name</th><th>Father</th><th>Total (₹)</th><th>Received (₹)</th><th>Due (₹)</th><th>Actions</th>
+        </tr></thead><tbody>`;
+    
+    filtered.forEach(s => {
+        const isFullyPaid = s.due_amount <= 0;
+        const dueBadge = isFullyPaid ? 'paid-badge' : 'due-badge';
+        const dueText = isFullyPaid ? 'PAID' : `₹${Number(s.due_amount).toLocaleString()}`;
+        
+        html += `<tr data-student-id="${s.id}">
+            <td><span class="amount-badge">${s.roll_number}</span></td>
+            <td>
+                <div><span class="student-name" onclick="event.stopPropagation(); showStudentDetails('${s.id}')">${s.student_name}</span></div>
+                <div class="father-name"><i class="fas fa-phone"></i> ${s.phone_number || 'N/A'}</div>
+             </div></div></td>
+            <td>${s.father_name}</div></td>
+            <td><span class="amount-badge">₹${Number(s.total_amount).toLocaleString()}</span></div></td>
+            <td><span class="amount-badge">₹${Number(s.received_amount).toLocaleString()}</span></div></td>
+            <td><span class="${dueBadge}">${dueText}</span></div></td>
+            <td><div class="action-buttons">
+                <button class="history-btn" onclick="event.stopPropagation(); showTransactionHistory('${s.id}')"><i class="fas fa-history"></i> History</button>
+                <button class="update-btn" onclick="event.stopPropagation(); openUpdateModal('${s.id}')" ${isFullyPaid ? 'disabled' : ''}><i class="fas fa-edit"></i> Update</button>
+                <button class="delete-btn" onclick="event.stopPropagation(); deleteStudent('${s.id}', '${s.student_name}')"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div></div></div></td>
+        </tr>`;
+    });
+    html += `</tbody></table>`;
+    tableContainer.innerHTML = html;
+}
+
+downloadPdfBtn.addEventListener('click', async function() {
+    let filtered = allStudents.filter(s => s.session === sessionFilter.value);
+    if (classFilter.value !== 'All') filtered = filtered.filter(s => s.class === classFilter.value);
+    const searchRoll = rollSearchInput.value.trim().toLowerCase();
+    if (searchRoll) filtered = filtered.filter(s => (s.roll_number || '').toString().toLowerCase().includes(searchRoll));
+    
+    let totalFee = 0, totalReceived = 0, totalDue = 0;
+    filtered.forEach(s => {
+        totalFee += Number(s.total_amount) || 0;
+        totalReceived += Number(s.received_amount) || 0;
+        totalDue += Number(s.due_amount) || 0;
+    });
+    
+    let tableRows = '';
+    filtered.forEach((s, index) => {
+        const status = s.due_amount <= 0 ? 'PAID' : 'PENDING';
+        const statusColor = s.due_amount <= 0 ? '#16a34a' : '#dc2626';
+        tableRows += `<tr><td style="padding: 8px; text-align: center;">${index + 1}</td><td style="padding: 8px;">${s.roll_number}</td><td style="padding: 8px;"><strong>${s.student_name}</strong><br><span style="font-size: 11px;">${s.father_name}</span></td><td style="padding: 8px;">${s.phone_number || 'N/A'}</td><td style="padding: 8px;">${s.class}</td><td style="padding: 8px; text-align: right;">₹${Number(s.total_amount).toLocaleString()}</td><td style="padding: 8px; text-align: right;">₹${Number(s.received_amount).toLocaleString()}</td><td style="padding: 8px; text-align: right; font-weight: 600; color: ${statusColor};">₹${Number(s.due_amount).toLocaleString()}</td><td style="padding: 8px; text-align: center;"><span style="background: ${statusColor}15; color: ${statusColor}; padding: 4px 10px; border-radius: 20px;">${status}</span></td></tr>`;
+    });
+    
+    const currentDate = new Date().toLocaleDateString('en-IN');
+    const className = classFilter.value === 'All' ? 'All Classes' : classFilter.value;
+    
+    const pdfHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>लक्ष्य कोचिंग - Fee Report</title><style>
+        *{margin:0;padding:0;box-sizing:border-box;} body{padding:20px;} .header{text-align:center;margin-bottom:20px;border-bottom:2px solid #1a3a6e;padding-bottom:10px;}
+        .coaching-name{font-size:22px;font-weight:800;color:#1a3a6e;} .report-title{font-size:16px;font-weight:700;margin:10px 0;}
+        table{width:100%;border-collapse:collapse;margin-top:15px;font-size:11px;} th{background:#1a3a6e;color:white;padding:8px;} td{padding:6px;border-bottom:1px solid #ddd;}
+        .summary{background:#1a3a6e;color:white;padding:12px;margin-bottom:15px;display:flex;justify-content:space-around;} .footer{margin-top:20px;text-align:center;font-size:10px;}
+    </style></head><body>
+    <div class="header"><div class="coaching-name">🏆 लक्ष्य कोचिंग सेंटर 🏆</div><div>बंगरा पट्टी & जटौलिया चौक | 📞 +91 7654204716</div><div>GUIDANCE BY: MR. MANISH SIR</div></div>
+    <div class="report-title">📊 STUDENT FEE REPORT</div>
+    <div>Session: ${sessionFilter.value} | Class: ${className} | Date: ${currentDate} | Total Students: ${filtered.length}</div>
+    <div class="summary"><div>💰 Total Fee: ₹${totalFee.toLocaleString()}</div><div>💵 Received: ₹${totalReceived.toLocaleString()}</div><div>⏳ Due: ₹${totalDue.toLocaleString()}</div></div>
+    <table><thead><tr><th>#</th><th>Roll</th><th>Student Name</th><th>Phone</th><th>Class</th><th>Total</th><th>Received</th><th>Due</th><th>Status</th></tr></thead><tbody>${tableRows}</tbody></table>
+    <div class="footer">This is a computer generated report | लक्ष्य कोचिंग सेंटर</div>
+    <script>window.onload=function(){window.print();};<\/script></body></html>`;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(pdfHtml);
+    printWindow.document.close();
+});
+
+function showStudentDetails(studentId) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+    
+    let subjectsHtml = '', extraFeesHtml = '';
+    if (student.subjects && student.subjects.length > 0) {
+        subjectsHtml = `<div><strong>📖 विषय:</strong> ${student.subjects.map(s => `${s} (₹3000)`).join(', ')}</div>`;
+    }
+    
+    Swal.fire({
+        title: `<strong>${student.student_name}</strong>`,
+        html: `<div style="text-align: left;"><div><strong>🔢 Roll No:</strong> ${student.roll_number}</div><div><strong>👨 Father:</strong> ${student.father_name}</div><div><strong>📞 Phone:</strong> ${student.phone_number || 'N/A'}</div><div><strong>🏫 Class:</strong> ${student.class}</div><div><strong>📅 Session:</strong> ${student.session}</div>${subjectsHtml}<hr><div><strong>💰 Total:</strong> ₹${Number(student.total_amount).toLocaleString()}</div><div><strong>💵 Received:</strong> ₹${Number(student.received_amount).toLocaleString()}</div><div><strong>⏳ Due:</strong> <span style="color:${student.due_amount<=0?'green':'red'}">₹${Number(student.due_amount).toLocaleString()}</span></div></div>`,
+        icon: 'info',
+        confirmButtonColor: '#ff9800',
+        confirmButtonText: 'OK'
+    });
+}
+
+window.showTransactionHistory = async function(studentId) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+    let info = `<div><strong>${student.student_name}</strong><br>Roll: ${student.roll_number} | Class: ${student.class}<br>Total Paid: ₹${Number(student.received_amount).toLocaleString()} | Due: ₹${Number(student.due_amount).toLocaleString()}</div>`;
+    document.getElementById('historyStudentInfo').innerHTML = info;
+    document.getElementById('transactionsList').innerHTML = '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+    historyModal.show();
+    try {
+        const snapshot = await transactionsCollection.where('studentId', '==', studentId).get();
+        let transactions = []; 
+        snapshot.forEach(doc => transactions.push({ id: doc.id, ...doc.data() }));
+        if (transactions.length === 0) document.getElementById('transactionsList').innerHTML = '<p class="text-center text-muted">No transactions found</p>';
+        else {
+            transactions.sort((a,b) => (b.created_at?.toDate?.() || new Date(b.date)) - (a.created_at?.toDate?.() || new Date(a.date)));
+            let html = '';
+            transactions.forEach(t => {
+                const date = t.created_at?.toDate ? t.created_at.toDate() : new Date(t.date);
+                html += `<div class="transaction-item"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;"><div><span style="font-weight:700;color:#16a34a;">+ ₹${Number(t.amount).toLocaleString()}</span><div class="transaction-date"><i class="fas fa-calendar"></i> ${date.toLocaleString()}</div><div style="font-size:0.7rem;">ID: ${t.transactionId}</div></div><button class="invoice-small-btn" onclick="generateInvoiceForTransaction('${studentId}', '${t.transactionId}', '${t.invoiceNumber || ''}', ${t.amount})"><i class="fas fa-file-invoice"></i> Invoice</button></div></div>`;
+            });
+            document.getElementById('transactionsList').innerHTML = html;
+        }
+    } catch (error) { document.getElementById('transactionsList').innerHTML = `<p class="text-center text-danger">Error: ${error.message}</p>`; }
+};
+
+window.generateInvoiceForTransaction = async function(studentId, transactionId, savedInvoiceNumber, amount) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+    showProgress(); updateProgress(50);
+    try {
+        let invoiceNumber = savedInvoiceNumber;
+        if (!invoiceNumber) {
+            invoiceNumber = generateInvoiceNumber();
+            const txnQuery = await transactionsCollection.where('transactionId', '==', transactionId).get();
+            if (!txnQuery.empty) {
+                await transactionsCollection.doc(txnQuery.docs[0].id).update({ invoiceNumber: invoiceNumber });
+            }
+        }
+        const invoiceData = { 
+            student: student, 
+            paymentAmount: amount, 
+            date: new Date(), 
+            transactionId: transactionId, 
+            invoiceNumber: invoiceNumber,
+            coaching: COACHING_DETAILS 
+        };
+        hideProgress();
+        const invoiceHTML = generateInvoiceHTML(invoiceData);
+        const win = window.open(); 
+        win.document.write(invoiceHTML); 
+        win.document.close();
+    } catch (error) { hideProgress(); showErrorToast('Error: ' + error.message); }
+};
+
+window.deleteStudent = async function(studentId, studentName) {
+    const result = await showDeleteConfirmation(studentName);
+    if (!result.isConfirmed) return;
+    showProgress();
+    try {
+        const txns = await transactionsCollection.where('studentId', '==', studentId).get();
+        const batch = db.batch();
+        txns.forEach(doc => batch.delete(doc.ref));
+        batch.delete(feesCollection.doc(studentId));
+        await batch.commit();
+        hideProgress();
+        showSuccessToast(`✅ "${studentName}" हटा दिया गया`);
+        await loadStudents();
+    } catch (error) { hideProgress(); showErrorToast('Error: ' + error.message); }
+};
+
+window.openUpdateModal = function(studentId) {
+    selectedStudent = allStudents.find(s => s.id === studentId);
+    if (!selectedStudent) return;
+    if (selectedStudent.due_amount <= 0) { showFullyPaidPopup(selectedStudent.student_name); return; }
+    modalStudentInfo.innerHTML = `<div><strong>${selectedStudent.student_name}</strong><br>Roll: ${selectedStudent.roll_number}<br>Due: ₹${selectedStudent.due_amount.toLocaleString()}</div>`;
+    additionalAmount.value = '';
+    updateModal.show();
+};
+
+confirmUpdateBtn.addEventListener('click', async () => {
+    if (!selectedStudent) return;
+    const amount = parseFloat(additionalAmount.value);
+    if (isNaN(amount) || amount <= 0) { showErrorToast('Enter valid amount'); return; }
+    if (selectedStudent.due_amount <= 0) { updateModal.hide(); showFullyPaidPopup(selectedStudent.student_name); return; }
+    updateModal.hide(); showProgress();
+    try {
+        const newReceived = (selectedStudent.received_amount || 0) + amount;
+        const newDue = Math.max(0, (selectedStudent.total_amount || 0) - newReceived);
+        const transactionId = 'TXN' + Date.now().toString().slice(-8) + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        const invoiceNumber = generateInvoiceNumber();
+        const now = new Date();
+        await transactionsCollection.add({ 
+            studentId: selectedStudent.id, 
+            studentName: selectedStudent.student_name, 
+            rollNumber: selectedStudent.roll_number,
+            amount, 
+            previousReceived: selectedStudent.received_amount, 
+            newReceived, 
+            previousDue: selectedStudent.due_amount, 
+            newDue, 
+            transactionId: transactionId,
+            invoiceNumber: invoiceNumber,
+            date: now.toISOString(), 
+            created_at: firebase.firestore.FieldValue.serverTimestamp() 
+        });
+        await feesCollection.doc(selectedStudent.id).update({ received_amount: newReceived, due_amount: newDue });
+        selectedStudent.received_amount = newReceived; selectedStudent.due_amount = newDue;
+        await loadStudents();
+        if (generateInvoiceCheck.checked) {
+            const invoiceData = { 
+                student: selectedStudent, 
+                paymentAmount: amount, 
+                date: now, 
+                transactionId: transactionId,
+                invoiceNumber: invoiceNumber,
+                coaching: COACHING_DETAILS 
+            };
+            hideProgress();
+            const invoiceHTML = generateInvoiceHTML(invoiceData);
+            const win = window.open(); 
+            win.document.write(invoiceHTML); 
+            win.document.close();
+        } else { hideProgress(); showSuccessToast(`✅ ₹${amount} जमा हो गया`); }
+    } catch (error) { hideProgress(); showErrorToast('Error: ' + error.message); }
+});
+
+function generateInvoiceHTML(data) {
+    const s = data.student, c = data.coaching;
+    const logoUrl = "https://i.ibb.co/r2rS5rTw/logo.png";
+    const invoiceNo = data.invoiceNumber;
+    const date = data.date;
+    
+    let feeRows = '';
+    let subtotal = 0;
+    let discountAmount = s.discount_applied || 0;
+    
+    if (s.subjects && s.subjects.length > 0) {
+        s.subjects.forEach(sub => { feeRows += `<tr><td>${sub} (Subject Fee)</td><td style="text-align:right;">₹3,000/-</td></tr>`; subtotal += 3000; });
+    }
+    if (s.extra_fees && s.extra_fees.length > 0) {
+        s.extra_fees.forEach(fee => { feeRows += `<tr><td>${fee}</td><td style="text-align:right;">₹500/-</td></tr>`; subtotal += 500; });
+    }
+    if (discountAmount > 0) {
+        feeRows += `<tr style="color:#b91c1c;"><td>🎁 Discount</td><td style="text-align:right;">- ₹${discountAmount.toLocaleString()}/-</td></tr>`;
+    }
+    const finalTotal = subtotal - discountAmount;
+    
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice - ${s.student_name}</title>
+    <style>
+        @media print { body { margin:0; padding:0; } .no-print { display:none; } @page { size:A4; margin:0.5cm; } }
+        *{font-family:'Segoe UI',sans-serif;} body{background:#f4f7fc;padding:20px;display:flex;justify-content:center;}
+        .invoice-a4{max-width:1000px;background:white;border-radius:12px;padding:20px;margin:0;}
+        .header{text-align:center;margin-bottom:15px;border-bottom:2px solid #ff9800;padding-bottom:10px;}
+        .logo{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid #ff9800;}
+        .coaching-info h1{color:#1a3a6e;margin:5px 0;} .section{background:#fff8ed;padding:10px;border-radius:8px;margin-bottom:8px;border-left:3px solid #ff9800;}
+        .section-title{font-weight:700;color:#1a3a6e;} table{width:100%;border-collapse:collapse;margin:6px 0;font-size:0.75rem;}
+        th,td{padding:6px;border:1px solid #e2e8f0;text-align:left;} th{background:#1a3a6e;color:white;}
+        .total-row{background:#1a3a6e;color:white;} .terms{font-size:0.65rem;margin-top:8px;padding-top:6px;border-top:1px dashed #ff9800;}
+        .btn-group{display:flex;gap:8px;justify-content:center;margin-bottom:12px;}
+        .btn{padding:5px 14px;border:none;border-radius:50px;cursor:pointer;}
+        .btn-primary{background:#1a3a6e;color:white;} .btn-success{background:#16a34a;color:white;}
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    </head><body>
+    <div class="invoice-a4">
+        <div class="btn-group no-print">
+            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+            <button class="btn btn-success" onclick="window.close()"><i class="fas fa-times"></i> Close</button>
+        </div>
+        <div class="header">
+            <img src="${logoUrl}" class="logo" onerror="this.src='https://via.placeholder.com/70?text=LKC'">
+            <div class="coaching-info"><h1>🏆 लक्ष्य कोचिंग सेंटर 🏆</h1><p>बंगरा पट्टी & जटौलिया चौक | 📞 +91 7654204716</p><p>GUIDANCE BY: MR. MANISH SIR</p></div>
+        </div>
+        <h2 style="text-align:center;font-size:1.2rem;"><i class="fas fa-file-invoice"></i> FEE PAYMENT INVOICE</h2>
+        <div class="section"><div class="section-title"><i class="fas fa-user-graduate"></i> STUDENT DETAILS</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+            <div>Invoice No: <strong>${invoiceNo}</strong></div><div>Date: ${new Date(date).toLocaleString()}</div>
+            <div>Student: <strong>${s.student_name}</strong></div><div>Roll: ${s.roll_number}</div>
+            <div>Father: ${s.father_name}</div><div>Class: ${s.class} (${s.session})</div>
+        </div></div>
+        <div class="section"><div class="section-title"><i class="fas fa-coins"></i> FEE STRUCTURE</div>
+        <table><thead><tr><th>Description</th><th>Amount</th></tr></thead><tbody>${feeRows}<tr class="total-row"><td><strong>💰 Total Fee</strong></td><td><strong>₹${finalTotal.toLocaleString()}/-</strong></td></tr></tbody></table></div>
+        <div class="section"><div class="section-title"><i class="fas fa-credit-card"></i> PAYMENT DETAILS</div>
+        <table><thead><tr><th>Description</th><th>Amount</th></tr></thead><tbody>
+            <tr><td>Current Payment</td><td style="color:#16a34a;font-weight:700;">+ ₹${data.paymentAmount.toLocaleString()}/-</td></tr>
+            <tr><td>Total Paid</td><td>₹${Number(s.received_amount).toLocaleString()}/-</td></tr>
+            <tr><td>Remaining Due</td><td style="color:#b91c1c;">₹${Number(s.due_amount).toLocaleString()}/-</td></tr>
+        </tbody></table></div>
+        <div class="terms"><strong>📜 नियम एवं शर्तें:</strong>${TERMS_CONDITIONS_HINDI.map(t => `<p>• ${t}</p>`).join('')}</div>
+        <div style="text-align:center;margin-top:10px;"><p>✨ धन्यवाद! समय पर भुगतान के लिए शुक्रिया ✨</p><p>लक्ष्य कोचिंग सेंटर</p></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+    </body></html>`;
+}
+
+sessionFilter.addEventListener('change', renderTable);
+classFilter.addEventListener('change', renderTable);
+rollSearchInput.addEventListener('input', renderTable);
+if (feesCollection) { loadStudents(); setInterval(loadStudents, 10000); }
+</script>
+</body>
+</html>
