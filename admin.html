@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lakshya Coaching Centre - Admin Panel</title>
+    <title>लक्ष्य कोचिंग सेंटर - Admin Panel</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -35,18 +35,24 @@
             z-index: 1000;
         }
         .coaching-name {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
-            color: #0d6efd; /* Blue color for Lakshya */
+            color: #0d6efd;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+        .coaching-subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
         .help-step {
             margin-bottom: 15px;
             padding: 10px;
-            border-left: 4px solid #0d6efd; /* Blue color */
+            border-left: 4px solid #0d6efd;
             background-color: #f8f9fa;
             border-radius: 5px;
         }
@@ -59,10 +65,9 @@
         }
         .simple-instruction:before {
             content: "• ";
-            color: #0d6efd; /* Blue color */
+            color: #0d6efd;
             font-weight: bold;
         }
-        /* Fixed Help Button Position */
         .fixed-help-btn {
             position: fixed;
             top: 20px;
@@ -74,11 +79,9 @@
             font-size: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        /* Published Success Toast */
         .published-toast {
             background-color: #0d6efd !important;
         }
-        /* Save Changes Button Style */
         .save-changes-btn {
             background-color: #0dcaf0;
             border-color: #0dcaf0;
@@ -87,7 +90,6 @@
             background-color: #0bb6d9;
             border-color: #0bb6d9;
         }
-        /* Lakshya Brand Colors */
         .btn-primary {
             background-color: #0d6efd;
             border-color: #0d6efd;
@@ -98,6 +100,15 @@
         }
         .text-primary {
             color: #0d6efd !important;
+        }
+        .dashboard-redirect-btn {
+            background-color: #198754;
+            border-color: #198754;
+            margin-top: 10px;
+        }
+        .dashboard-redirect-btn:hover {
+            background-color: #157347;
+            border-color: #146c43;
         }
     </style>
 </head>
@@ -114,7 +125,10 @@
                 <div class="col-12">
                     <!-- Coaching Centre Name -->
                     <div class="coaching-name">
-                        LAKSHYA COACHING CENTRE
+                        लक्ष्य कोचिंग सेंटर
+                    </div>
+                    <div class="coaching-subtitle">
+                        GUIDANCE BY: MR. MANISH SIR | बंगरा पट्टी & जटौलिया चौक | +91 7654204716
                     </div>
                     
                     <!-- Dashboard Cards -->
@@ -152,6 +166,21 @@
                                     <h5 class="card-title">Online Tests</h5>
                                     <p class="card-text">View online test results</p>
                                     <button id="onlineTestsBtn" class="btn btn-success">Go</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 🔥 NEW BUTTON: Go to Dashboard (Fee Management) 🔥 -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="card text-center border-success">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">📊 Fee Management Dashboard</h5>
+                                    <p class="card-text">Manage students, fees, payments and invoices</p>
+                                    <button id="goToDashboardBtn" class="btn btn-success dashboard-redirect-btn">
+                                        <i class="fas fa-chart-line"></i> Go to Fee Dashboard
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -319,7 +348,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Language Switch -->
                     <div class="language-switch text-center mb-3">
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-outline-primary active" id="englishHelpBtn">English</button>
@@ -327,7 +355,6 @@
                         </div>
                     </div>
                     
-                    <!-- English Instructions -->
                     <div id="englishInstructions">
                         <h6 class="text-primary">Step 1: Make New Result</h6>
                         <div class="help-step">
@@ -372,7 +399,6 @@
                         </div>
                     </div>
                     
-                    <!-- Hindi Instructions -->
                     <div id="hindiInstructions" style="display: none;">
                         <h6 class="text-primary">चरण 1: नया रिजल्ट बनाएं</h6>
                         <div class="help-step">
@@ -482,7 +508,6 @@
         </div>
     </div>
 
-    <!-- Published Success Toast -->
     <div id="publishedToast" class="toast align-items-center text-bg-success border-0 success-message published-toast" role="alert" style="display: none;">
         <div class="d-flex">
             <div class="toast-body">
@@ -497,7 +522,6 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
         import { 
             getFirestore, 
@@ -513,7 +537,7 @@
             where
         } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-        // Firebase configuration - UPDATED FOR LAKSHYA COACHING
+        // Firebase configuration - लक्ष्य कोचिंग सेंटर
         const firebaseConfig = {
             apiKey: "AIzaSyBkCWExAXf8ByBVEBQ_FL6Pk8JCuVJZssE",
             authDomain: "soullink-d8341.firebaseapp.com",
@@ -538,6 +562,7 @@
         const draftResultsBtn = document.getElementById('draftResultsBtn');
         const oldResultsBtn = document.getElementById('oldResultsBtn');
         const onlineTestsBtn = document.getElementById('onlineTestsBtn');
+        const goToDashboardBtn = document.getElementById('goToDashboardBtn');
         
         const backToDashboardBtn = document.getElementById('backToDashboardBtn');
         const backToDashboardBtn2 = document.getElementById('backToDashboardBtn2');
@@ -605,7 +630,27 @@
         let editingPublishedResultId = null;
         let hasChanges = false;
 
-        // Directly show dashboard (no login required)
+        // Show section function
+        function showSection(section) {
+            dashboardSection.classList.remove('active');
+            createResultSection.classList.remove('active');
+            draftResultsSection.classList.remove('active');
+            oldResultsSection.classList.remove('active');
+            onlineTestsSection.classList.remove('active');
+            section.classList.add('active');
+        }
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            successToast.show();
+        }
+
+        // Go to Dashboard button handler
+        goToDashboardBtn.addEventListener('click', () => {
+            window.location.href = 'dashboard.html';
+        });
+
+        // Directly show dashboard
         showSection(dashboardSection);
 
         // Vibration function
@@ -617,7 +662,7 @@
 
         // Add click vibration to important buttons only
         const importantButtons = [
-            createResultBtn, draftResultsBtn, oldResultsBtn, onlineTestsBtn, helpButton,
+            createResultBtn, draftResultsBtn, oldResultsBtn, onlineTestsBtn, helpButton, goToDashboardBtn,
             generateSubjectFieldsBtn, nextToStudentEntryBtn, addStudentBtn,
             updateStudentBtn, saveDraftBtn, publishResultBtn, saveChangesBtn
         ];
@@ -631,7 +676,7 @@
             helpModal.show();
         });
 
-        // Language Switch Handlers (Help Modal)
+        // Language Switch Handlers
         englishHelpBtn.addEventListener('click', () => {
             englishInstructions.style.display = 'block';
             hindiInstructions.style.display = 'none';
@@ -666,7 +711,7 @@
             showSection(onlineTestsSection);
         });
         
-        // Handle back to dashboard with confirmation for edited published results
+        // Back to dashboard handlers
         backToDashboardBtn.addEventListener('click', () => {
             if (isEditingPublishedResult && hasChanges) {
                 editPublishedConfirmModal.show();
@@ -792,7 +837,7 @@
             rollNoInput.value = parseInt(rollNoInput.value) + 1;
         });
 
-        // Create Result - Add Student (with toast)
+        // Create Result - Add Student
         addStudentBtn.addEventListener('click', () => {
             const rollNo = parseInt(rollNoInput.value);
             const name = studentNameInput.value.trim();
@@ -862,20 +907,19 @@
                 });
                 
                 row.innerHTML = `
-                    <td>${student.rollNo}</td>
-                    <td>${student.name}</td>
-                    <td>${student.fatherName || '-'}</td>
-                    <td>${marksHtml}</td>
+                    <td>${student.rollNo}</div>
+                    <td>${student.name}</div>
+                    <td>${student.fatherName || '-'}</div>
+                    <td>${marksHtml}</div>
                     <td>
                         <button class="btn btn-sm btn-warning edit-student" data-index="${index}">Edit</button>
                         <button class="btn btn-sm btn-danger delete-student" data-index="${index}">Delete</button>
-                    </td>
+                    </div>
                 `;
                 
                 studentsTableBody.appendChild(row);
             });
             
-            // Add event listeners for edit and delete buttons
             document.querySelectorAll('.edit-student').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const index = parseInt(e.target.getAttribute('data-index'));
@@ -913,7 +957,7 @@
             showToast('Student edit mode activated!');
         }
 
-        // Create Result - Update Student (with toast)
+        // Create Result - Update Student
         updateStudentBtn.addEventListener('click', () => {
             if (editingStudentIndex === null) return;
             
@@ -983,20 +1027,18 @@
             cancelEditBtn.classList.add('d-none');
         }
 
-        // Create Result - Delete Student (with toast)
+        // Create Result - Delete Student
         function deleteStudent(index) {
             if (confirm('Are you sure you want to delete this student?')) {
                 students.splice(index, 1);
                 updateStudentsTable();
-                
                 hasChanges = true;
                 updateButtonVisibility();
-                
                 showToast('Student deleted successfully!');
             }
         }
 
-        // Setup change tracking for inputs
+        // Setup change tracking
         function setupChangeTracking() {
             const trackedInputs = [
                 examNameInput,
@@ -1008,14 +1050,14 @@
             ];
             
             trackedInputs.forEach(input => {
-                input.addEventListener('input', () => {
+                if (input) input.addEventListener('input', () => {
                     hasChanges = true;
                     updateButtonVisibility();
                 });
             });
         }
 
-        // Update button visibility based on editing mode
+        // Update button visibility
         function updateButtonVisibility() {
             if (isEditingPublishedResult) {
                 saveDraftBtn.classList.add('d-none');
@@ -1030,7 +1072,7 @@
             }
         }
 
-        // Create Result - Save as Draft (with toast)
+        // Save as Draft
         saveDraftBtn.addEventListener('click', async () => {
             if (!validateResultData()) return;
             
@@ -1059,14 +1101,14 @@
             }
         });
 
-        // Save Changes button for editing published results
+        // Save Changes button
         saveChangesBtn.addEventListener('click', () => {
             if (validateResultData()) {
                 updateExistingPublishedResult();
             }
         });
 
-        // Don't Save button handler
+        // Don't Save button
         dontSaveBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to discard all changes?')) {
                 resetCreateResultForm();
@@ -1121,7 +1163,7 @@
             }
         }
 
-        // Create Result - Publish Result (with toast)
+        // Publish Result
         publishResultBtn.addEventListener('click', async () => {
             if (!validateResultData()) return;
             
@@ -1220,7 +1262,6 @@
                     draftResultsList.appendChild(draftCard);
                 });
                 
-                // Add event listeners
                 document.querySelectorAll('.edit-draft').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const draftId = e.target.getAttribute('data-id');
@@ -1240,7 +1281,7 @@
             }
         }
 
-        // Edit Draft (with toast)
+        // Edit Draft
         async function editDraft(draftId) {
             try {
                 const draftDoc = await getDocs(query(collection(db, "draft_results"), where("__name__", "==", draftId)));
@@ -1291,7 +1332,7 @@
             }
         }
 
-        // Delete Draft (with toast)
+        // Delete Draft
         async function deleteDraft(draftId) {
             if (!confirm('Are you sure you want to delete this draft?')) return;
             
@@ -1342,7 +1383,6 @@
                     oldResultsList.appendChild(resultCard);
                 });
                 
-                // Add event listeners
                 document.querySelectorAll('.view-result').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const resultId = e.target.getAttribute('data-id');
@@ -1369,7 +1409,7 @@
             }
         }
 
-        // Edit Result (Published Result) (with toast)
+        // Edit Published Result
         async function editResult(resultId) {
             try {
                 const resultDoc = await getDocs(query(collection(db, "results"), where("__name__", "==", resultId)));
@@ -1413,7 +1453,6 @@
                     updateButtonVisibility();
                     
                     showSection(createResultSection);
-
                 }, 100);
 
                 showToast('Result loaded for editing!');
@@ -1423,23 +1462,18 @@
             }
         }
 
-        // Delete Result (Published Result) (with toast)
+        // Delete Published Result
         async function deleteResult(resultId) {
             if (!confirm('Are you sure you want to delete this published result?')) return;
             
             try {
-                await deleteResultFromDB(resultId);
+                await deleteDoc(doc(db, "results", resultId));
                 showToast('Result deleted successfully!');
                 loadOldResults();
             } catch (error) {
                 console.error('Error deleting result:', error);
                 alert('Error deleting result: ' + error.message);
             }
-        }
-
-        // Delete Result from Database
-        async function deleteResultFromDB(resultId) {
-            await deleteDoc(doc(db, "results", resultId));
         }
 
         // View Result
@@ -1480,7 +1514,7 @@
                 resultHtml += `<th>Percentage</th>`;
                 
                 resultHtml += `
-                                </tr>
+                                 </tr>
                             </thead>
                             <tbody>
                 `;
@@ -1491,9 +1525,9 @@
                     
                     resultHtml += `
                         <tr>
-                            <td>${student.rollNo}</td>
-                            <td>${student.name}</td>
-                            <td>${student.fatherName || '-'}</td>
+                            <td>${student.rollNo}</div>
+                            <td>${student.name}</div>
+                            <td>${student.fatherName || '-'}</div>
                     `;
                     
                     data.subjects.forEach(subject => {
@@ -1501,14 +1535,14 @@
                         totalMarks += mark;
                         totalMaxMarks += subject.total;
                         
-                        resultHtml += `<td>${mark}/${subject.total}</td>`;
+                        resultHtml += `<td>${mark}/${subject.total}</div>`;
                     });
                     
                     const percentage = totalMaxMarks > 0 ? ((totalMarks / totalMaxMarks) * 100).toFixed(2) : 0;
                     
                     resultHtml += `
-                            <td>${totalMarks}/${totalMaxMarks}</td>
-                            <td>${percentage}%</td>
+                            <td>${totalMarks}/${totalMaxMarks}</div>
+                            <td>${percentage}%</div>
                         </tr>
                     `;
                 });
@@ -1525,22 +1559,6 @@
                 console.error('Error loading result:', error);
                 alert('Error loading result: ' + error.message);
             }
-        }
-
-        // Helper Functions
-        function showSection(section) {
-            dashboardSection.classList.remove('active');
-            createResultSection.classList.remove('active');
-            draftResultsSection.classList.remove('active');
-            oldResultsSection.classList.remove('active');
-            onlineTestsSection.classList.remove('active');
-            
-            section.classList.add('active');
-        }
-
-        function showToast(message) {
-            toastMessage.textContent = message;
-            successToast.show();
         }
     </script>
 </body>
